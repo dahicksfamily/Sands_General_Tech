@@ -1,0 +1,11 @@
+{
+  "item.sgt.sandstone_rock": "Sandstone Rock",
+  "item.sgt.chert_shard": "Common Chert Shard",
+  "item.sgt.chert_sharp": "Common Chert Sharp",
+  "item.sgt.chert_sharp_side": "Common Chert Sharp Side",
+  "item.sgt.chert_rock": "Common Chert",
+
+  "block.sgt.sphere": "Sphere",
+
+  "death.attack.sgt.heat": "%1$s took to much heat."
+}

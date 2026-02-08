@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:block/block",
+  "automatic_culling": true,
+  "flip_v": true,
+  "loader": "forge:obj",
+  "model": "sgt:models/sphere.obj",
+  "textures": {
+    "particle": "sgt:block/sphere",
+    "sphere_texture": "sgt:block/sphere"
+  }
+}
