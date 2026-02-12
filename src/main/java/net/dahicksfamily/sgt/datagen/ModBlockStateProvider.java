@@ -1,7 +1,7 @@
 package net.dahicksfamily.sgt.datagen;
 
 import net.dahicksfamily.sgt.SGT;
-import net.dahicksfamily.sgt.common.registry.ModBlocks;
+import net.dahicksfamily.sgt.block.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;

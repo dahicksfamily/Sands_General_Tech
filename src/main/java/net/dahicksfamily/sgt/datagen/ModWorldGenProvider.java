@@ -1,7 +1,7 @@
 package net.dahicksfamily.sgt.datagen;
 
 import net.dahicksfamily.sgt.SGT;
-import net.dahicksfamily.sgt.common.registry.ModDimensions;
+//import net.dahicksfamily.sgt.common.registry.ModDimensions;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -13,8 +13,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModWorldGenProvider extends DatapackBuiltinEntriesProvider {
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
-            .add(Registries.DIMENSION_TYPE, ModDimensions::bootstrapType)
-            .add(Registries.LEVEL_STEM, ModDimensions::bootstrapStem);
+            //.add(Registries.DIMENSION_TYPE, ModDimensions::bootstrapType)
+            //.add(Registries.LEVEL_STEM, ModDimensions::bootstrapStem)
+    ;
 
     public ModWorldGenProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries, BUILDER, Set.of(SGT.MOD_ID));

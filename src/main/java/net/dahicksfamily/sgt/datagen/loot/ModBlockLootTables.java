@@ -1,6 +1,6 @@
 package net.dahicksfamily.sgt.datagen.loot;
 
-import net.dahicksfamily.sgt.common.registry.ModBlocks;
+import net.dahicksfamily.sgt.block.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;

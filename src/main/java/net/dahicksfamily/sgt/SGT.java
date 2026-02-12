@@ -1,13 +1,11 @@
 package net.dahicksfamily.sgt;
 
 import com.mojang.logging.LogUtils;
-import net.dahicksfamily.sgt.SpaceRendering.SpaceRenderer;
-import net.dahicksfamily.sgt.common.registry.ModBlocks;
-import net.dahicksfamily.sgt.common.registry.ModItems;
-import net.minecraft.Util;
+import net.dahicksfamily.sgt.block.ModBlocks;
+import net.dahicksfamily.sgt.item.ModItems;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -49,6 +47,10 @@ public class SGT
 
     }
 
+    public static ResourceLocation rl(String location) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, location);
+    }
+
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
@@ -77,11 +79,6 @@ public class SGT
 
         @SubscribeEvent
         public static void onClientSetup(final FMLClientSetupEvent event) {
-        }
-
-        @SubscribeEvent
-        public static void OnLevelRenderedStartEvent(RenderLevelStageEvent.RegisterStageEvent event) {
-            SpaceRenderer.setupBuffers();
         }
     }
 }
