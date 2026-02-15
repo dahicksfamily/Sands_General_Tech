@@ -7,5 +7,6 @@
 
   "block.sgt.sphere": "Sphere",
 
-  "death.attack.sgt.heat": "%1$s took to much heat."
+  "death.attack.sgt.heat": "%1$s took to much heat.",
+  "key.sgt.toggle_planet_labels": "Toggle Planet Labels"
 }
