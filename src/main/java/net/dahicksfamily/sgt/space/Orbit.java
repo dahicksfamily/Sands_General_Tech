@@ -11,7 +11,7 @@ public class Orbit {
     protected double meanAnomalyAtEpoch;   // M0 - position at reference time
     protected double epoch;                // reference time (ticks or seconds)
 
-    protected double period;               // orbital period (calculated from semi-major axis)
+    public double period;               // orbital period (calculated from semi-major axis)
     public CelestialBody parent;        // what this orbits around (null for barycenter)
 
     // Gravitational parameter (GM) - can be set based on parent mass
@@ -56,7 +56,7 @@ public class Orbit {
         return orbitalToCartesian(vx_orbital, vy_orbital);
     }
 
-    protected double getMeanAnomaly(double time) {
+    public double getMeanAnomaly(double time) {
         double n = 2 * Math.PI / period;
         double M = meanAnomalyAtEpoch + n * (time - epoch);
 

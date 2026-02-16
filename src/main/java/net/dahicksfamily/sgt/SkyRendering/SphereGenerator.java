@@ -6,79 +6,79 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class SphereGenerator {
-    public static BufferBuilder.RenderedBuffer generateSphere(float radius, int segments, int rings) {
+
+    public static BufferBuilder.@NotNull RenderedBuffer generateSphere(float radius, int segments, int rings) {
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
-
-        System.out.println("Generating sphere: segments=" + segments + ", rings=" + rings);
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
 
         for (int lat = 0; lat < rings; lat++) {
-            float theta1 = lat * (float)Math.PI / rings;
-            float theta2 = (lat + 1) * (float)Math.PI / rings;
+            float theta1 = ((float)lat / rings) * (float)Math.PI;
+            float theta2 = ((float)(lat + 1) / rings) * (float)Math.PI;
 
             for (int lon = 0; lon < segments; lon++) {
-                float phi1 = lon * 2 * (float)Math.PI / segments;
-                float phi2 = (lon + 1) * 2 * (float)Math.PI / segments;
+                float phi1 = ((float)lon / segments) * 2.0f * (float)Math.PI;
+                float phi2 = ((float)(lon + 1) / segments) * 2.0f * (float)Math.PI;
 
-                Vertex v1 = sphereVertex(radius, theta1, phi1);
-                Vertex v2 = sphereVertex(radius, theta1, phi2);
-                Vertex v3 = sphereVertex(radius, theta2, phi2);
-                Vertex v4 = sphereVertex(radius, theta2, phi1);
+                float u1 = (float)lon / segments;
+                float u2 = (float)(lon + 1) / segments;
+                float v1 = (float)lat / rings;
+                float v2 = (float)(lat + 1) / rings;
 
-                addVertex(bufferBuilder, v1);
-                addVertex(bufferBuilder, v2);
-                addVertex(bufferBuilder, v3);
-                addVertex(bufferBuilder, v4);
+                addVertexFromAngles(bufferBuilder, radius, theta1, phi1, u1, v1);
+                addVertexFromAngles(bufferBuilder, radius, theta1, phi2, u2, v1);
+                addVertexFromAngles(bufferBuilder, radius, theta2, phi2, u2, v2);
+
+                addVertexFromAngles(bufferBuilder, radius, theta1, phi1, u1, v1);
+                addVertexFromAngles(bufferBuilder, radius, theta2, phi2, u2, v2);
+                addVertexFromAngles(bufferBuilder, radius, theta2, phi1, u1, v2);
             }
         }
 
         return bufferBuilder.end();
     }
 
-    private static Vertex sphereVertex(float radius, float theta, float phi) {
-        float x = radius * (float)(Math.sin(theta) * Math.cos(phi));
-        float y = radius * (float)(Math.cos(theta));
-        float z = radius * (float)(Math.sin(theta) * Math.sin(phi));
+    private static void addVertexFromAngles(BufferBuilder builder, float radius, float theta, float phi, float u, float v) {
+        float sinTheta = (float)Math.sin(theta);
+        float cosTheta = (float)Math.cos(theta);
+        float sinPhi = (float)Math.sin(phi);
+        float cosPhi = (float)Math.cos(phi);
 
+        float x = radius * sinTheta * cosPhi;
+        float y = radius * cosTheta;
+        float z = radius * sinTheta * sinPhi;
+
+        float nx = sinTheta * cosPhi;
+        float ny = cosTheta;
+        float nz = sinTheta * sinPhi;
+
+        builder.vertex(x, y, z)
+                .uv(u, v)
+                .color(255, 255, 255, 255)
+                .normal(nx, ny, nz)
+                .endVertex();
+    }
+
+    private static void addVertexArray(BufferBuilder builder, float[] v) {
+        builder.vertex(v[0], v[1], v[2])
+                .uv(v[3], v[4])
+                .color(255, 255, 255, 255)
+                .normal(v[5], v[6], v[7])
+                .endVertex();
+    }
+
+    private static void addVertex(BufferBuilder builder, float x, float y, float z, float u, float v, float radius) {
         float nx = x / radius;
         float ny = y / radius;
         float nz = z / radius;
 
-        float u = (float)(phi / (2 * Math.PI));
-        float v = (float)(theta / Math.PI);
-
-        u = Math.max(0.0f, Math.min(1.0f, u));
-        v = Math.max(0.0f, Math.min(1.0f, v));
-
-        return new Vertex(x, y, z, u, v, nx, ny, nz);
-    }
-
-    private static void addVertex(BufferBuilder builder, Vertex v) {
-        builder.vertex(v.x, v.y, v.z)
-                .uv(v.u, v.v)
+        builder.vertex(x, y, z)
+                .uv(u, v)
                 .color(255, 255, 255, 255)
-                .normal(v.nx, v.ny, v.nz)
+                .normal(nx, ny, nz)
                 .endVertex();
-    }
-
-    private static class Vertex {
-        float x, y, z;
-        float u, v;
-        float nx, ny, nz;
-
-        Vertex(float x, float y, float z, float u, float v, float nx, float ny, float nz) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.u = u;
-            this.v = v;
-            this.nx = nx;
-            this.ny = ny;
-            this.nz = nz;
-        }
     }
 }

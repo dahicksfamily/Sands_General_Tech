@@ -3,6 +3,7 @@ package net.dahicksfamily.sgt.SkyRendering;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
+import net.dahicksfamily.sgt.client.ModShaders;
 import net.dahicksfamily.sgt.space.CelestialBody;
 import net.dahicksfamily.sgt.space.SolarSystem;
 import net.dahicksfamily.sgt.space.Star;
@@ -11,11 +12,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +52,11 @@ public class SpaceObjectRenderer {
 
         sphereBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 
+        RenderSystem.disableCull();
+
         BufferBuilder.RenderedBuffer sphereData = SphereGenerator.generateSphere(1.0f, 64, 32);
+
+        RenderSystem.enableCull();
 
         sphereBuffer.bind();
         sphereBuffer.upload(sphereData);
@@ -79,29 +88,28 @@ public class SpaceObjectRenderer {
 
         poseStack.pushPose();
 
-        if (observer != null && observer.name.equals("Earth")) {
-            double currentDay = solarSystem.getCurrentTime();
-            double yearProgress = (currentDay % 365.25) / 365.25;
+        double seasonalTilt = 0;
+        if (observer != null) {
+            double timeInDays = currentTime / 24000.0;
 
-            double tiltAngle = Math.toRadians(23.44);
-
-            double seasonalTilt = tiltAngle * Math.cos(2 * Math.PI * yearProgress);
+            double yearProgress = (timeInDays % observer.period) / observer.period;
+            seasonalTilt = observer.axialTilt * Math.cos(2 * Math.PI * yearProgress);
 
             poseStack.mulPose(Axis.XP.rotation((float) seasonalTilt));
+
+            System.out.println(observer.name + " seasonal tilt: " + Math.toDegrees(seasonalTilt) + "° (day: " + timeInDays + ")");
         }
 
         for (CelestialBody body : visibleBodies) {
             if (body instanceof Star) {
                 renderStar(poseStack, projectionMatrix, (Star) body, observer);
             } else {
-                renderPlanet(poseStack, projectionMatrix, body, observer, solarSystem);
+                renderPlanet(poseStack, projectionMatrix, body, observer, solarSystem, seasonalTilt);
             }
-            
+
             if (showLabels) {
                 Vec3 relativePos = getRelativePosition(body, observer);
                 Vec3 skyPos = relativePos.normalize().scale(100);
-                float apparentSize = calculateApparentSize(body, relativePos);
-
                 renderLabel(poseStack, projectionMatrix, body.name, skyPos, body, camera, observer);
             }
         }
@@ -169,8 +177,7 @@ public class SpaceObjectRenderer {
 
         SolarSystem solarSystem = SolarSystem.getInstance();
         double currentTime = solarSystem.getCurrentTime();
-
-        double rotationAngle = (currentTime * 24.0 / star.rotationPeriod) * 2 * Math.PI;
+        double rotationAngle = star.getRotationAngle(currentTime);
 
         poseStack.mulPose(Axis.ZP.rotation((float) star.axialTilt));
         poseStack.mulPose(Axis.YP.rotation((float) rotationAngle));
@@ -199,7 +206,8 @@ public class SpaceObjectRenderer {
 
     private static void renderPlanet(PoseStack poseStack, Matrix4f projectionMatrix,
                                      CelestialBody body, CelestialBody observer,
-                                     SolarSystem solarSystem) {
+                                     SolarSystem solarSystem, double seasonalTilt) {
+
 
         Vec3 relativePos = getRelativePosition(body, observer);
         Vec3 skyPos = relativePos.normalize().scale(100);
@@ -210,42 +218,54 @@ public class SpaceObjectRenderer {
 
         Vec3 lightSourcePos = getRelativePosition(lightSource, observer);
 
-        float brightness = calculatePlanetBrightness(body, relativePos, lightSourcePos);
-
         poseStack.pushPose();
 
         poseStack.translate(skyPos.x, skyPos.y, skyPos.z);
 
-
-        Vec3 sunDirection = lightSourcePos.subtract(relativePos).normalize();
-
-        double sunYaw = Math.atan2(sunDirection.x, sunDirection.z);
-        double sunPitch = -Math.asin(sunDirection.y);
-
-        poseStack.mulPose(Axis.YP.rotation((float) sunYaw));
-        poseStack.mulPose(Axis.XP.rotation((float) sunPitch));
-
         double currentTime = solarSystem.getCurrentTime();
-        double rotationAngle = (currentTime * 24.0 / body.rotationPeriod) * 2 * Math.PI;
 
-        poseStack.mulPose(Axis.ZP.rotation((float) body.axialTilt));
-        poseStack.mulPose(Axis.YP.rotation((float) rotationAngle));
+        if (body.tidallyLocked && body.parent != null) {
+            double timeInDays = currentTime / 24000.0;
+
+            double M = body.getMeanAnomaly(timeInDays);
+
+            poseStack.mulPose(Axis.YP.rotation((float) (M + body.tidalLockingOffset)));
+            poseStack.mulPose(Axis.ZP.rotation((float) body.axialTilt));
+
+        } else {
+            double rotationAngle = body.getRotationAngle(currentTime);
+            poseStack.mulPose(Axis.YP.rotation((float) rotationAngle));
+            poseStack.mulPose(Axis.ZP.rotation((float) body.axialTilt));
+        }
 
         poseStack.scale(apparentSize, apparentSize, apparentSize);
 
+        Vec3 lightDir = lightSourcePos.subtract(relativePos).normalize();
+        Vector3f lightDirVec = new Vector3f((float)lightDir.x, (float)lightDir.y, (float)lightDir.z);
+
         RenderSystem.setShaderTexture(0, body.texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderColor(brightness, brightness, brightness, 1.0f);
+        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+
+        ShaderInstance shader = ModShaders.getCelestialBodyShader();
+        if (shader != null) {
+            ModShaders.setLightDirection(lightDirVec);
+            ModShaders.setAmbientLight(0.15f);
+            RenderSystem.setShader(() -> shader);
+        } else {
+            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        }
+
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         sphereBuffer.bind();
-        assert GameRenderer.getPositionTexColorShader() != null;
         sphereBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix,
-                GameRenderer.getPositionTexColorShader());
+                shader != null ? shader : GameRenderer.getPositionTexColorShader());
         VertexBuffer.unbind();
 
         poseStack.popPose();
-
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     private static float calculatePlanetBrightness(CelestialBody body, Vec3 bodyPos, Vec3 lightPos) {

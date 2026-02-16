@@ -20,83 +20,89 @@ public class PlanetsProvider {
     public static void registerCelestialBodies() {
         Star sol = new Star();
         sol.name = "Sun";
-        sol.mass = 1.989e30; // kg
-        sol.radius = 696340; // km
-        sol.luminosity = 1.0; // Solar luminosities
-        sol.temperature = 5778; // Kelvin
+        sol.mass = 1.989e30;
+        sol.radius = 696340;
+        sol.luminosity = 1.0;
+        sol.temperature = 5778;
         sol.spectralType = "G2V";
         sol.rotationPeriod = 609.12; // hours (25.05 days)
         sol.axialTilt = Math.toRadians(7.25);
         sol.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/sol.png");
         sol.parent = null;
+        sol.tidallyLocked = false;
+        sol.longitudeAtEpoch = 0;
         registerStar(sol);
 
         CelestialBody earth = new CelestialBody();
         earth.name = "Earth";
-        earth.mass = 5.972e24; // kg
-        earth.radius = 6371; // km
-        earth.rotationPeriod = 24; // hours
+        earth.mass = 5.972e24;
+        earth.radius = 6371;
+        earth.rotationPeriod = 23.9345; // hours (sidereal day)
         earth.axialTilt = Math.toRadians(23.44);
         earth.albedo = 0.306f;
         earth.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/earth.png");
+        earth.tidallyLocked = false;
+        earth.longitudeAtEpoch = 0;
 
         earth.parent = sol;
-        earth.semiMajorAxis = 1.0; // AU (149.6 million km)
+        earth.semiMajorAxis = 1.0;
         earth.eccentricity = 0.0167;
-        earth.inclination = 0; // Reference plane
+        earth.inclination = 0;
         earth.longitudeOfAscendingNode = 0;
         earth.argumentOfPeriapsis = Math.toRadians(102.94);
         earth.meanAnomalyAtEpoch = 0;
-        earth.epoch = 0; // Reference time
-        earth.period = 365.25; // days
+        earth.epoch = 0;
+        earth.period = 365.25;
 
         registerCelestialBody(earth);
-        assignDimension(earth, Level.OVERWORLD); // Earth is the overworld
+        assignDimension(earth, Level.OVERWORLD);
 
         CelestialBody luna = new CelestialBody();
         luna.name = "Moon";
-        luna.mass = 7.342e22; // kg
-        luna.radius = 1737.4; // km
-        luna.rotationPeriod = 655.728; // hours (27.32 days - tidally locked)
+        luna.mass = 7.342e22;
+        luna.radius = 1737.4;
+        luna.rotationPeriod = 655.728; // hours (27.32 days)
         luna.axialTilt = Math.toRadians(1.54);
         luna.albedo = 0.12f;
         luna.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/luna.png");
+        luna.tidallyLocked = true;
+        luna.tidalLockingOffset = Math.toRadians(90); // 90 = front of texture faces Earth
+        luna.longitudeAtEpoch = 0;
 
         luna.parent = earth;
-        luna.semiMajorAxis = 384400; // km (0.00257 AU)
+        luna.semiMajorAxis = 384400;
         luna.eccentricity = 0.0549;
         luna.inclination = Math.toRadians(5.145);
         luna.longitudeOfAscendingNode = 0;
         luna.argumentOfPeriapsis = 0;
         luna.meanAnomalyAtEpoch = 0;
         luna.epoch = 0;
-        luna.period = 27.32; // days
+        luna.period = 27.32;
 
         registerCelestialBody(luna);
 
         CelestialBody mars = new CelestialBody();
         mars.name = "Mars";
-        mars.mass = 6.4171e23; // kg
-        mars.radius = 3389.5; // km
-        mars.rotationPeriod = 24.6229; // hours
+        mars.mass = 6.4171e23;
+        mars.radius = 3389.5;
+        mars.rotationPeriod = 24.6229; // hours (slightly longer than Earth)
         mars.axialTilt = Math.toRadians(25.19);
         mars.albedo = 0.25f;
         mars.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/mars.png");
+        mars.tidallyLocked = false;
+        mars.longitudeAtEpoch = 0;
 
         mars.parent = sol;
-        mars.semiMajorAxis = 1.524; // AU
+        mars.semiMajorAxis = 1.524;
         mars.eccentricity = 0.0934;
         mars.inclination = Math.toRadians(1.85);
         mars.longitudeOfAscendingNode = Math.toRadians(49.58);
         mars.argumentOfPeriapsis = Math.toRadians(286.5);
         mars.meanAnomalyAtEpoch = 0;
         mars.epoch = 0;
-        mars.period = 686.98; // days
+        mars.period = 686.98;
 
         registerCelestialBody(mars);
-        // assignDimension(mars, MARS_DIMENSION);
-
-        //TODO: Add more planets: Venus, Mercury, Jupiter, Saturn, Uranus, Neptune
     }
 
     private static void registerCelestialBody(CelestialBody body) {
