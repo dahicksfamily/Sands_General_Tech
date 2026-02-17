@@ -104,7 +104,7 @@ public class SpaceObjectRenderer {
             if (body instanceof Star) {
                 renderStar(poseStack, projectionMatrix, (Star) body, observer);
             } else {
-                renderPlanet(poseStack, projectionMatrix, body, observer, solarSystem, seasonalTilt);
+                renderPlanet(poseStack, projectionMatrix, body, observer, solarSystem);
             }
 
             if (showLabels) {
@@ -206,10 +206,11 @@ public class SpaceObjectRenderer {
 
     private static void renderPlanet(PoseStack poseStack, Matrix4f projectionMatrix,
                                      CelestialBody body, CelestialBody observer,
-                                     SolarSystem solarSystem, double seasonalTilt) {
-
+                                     SolarSystem solarSystem) {
 
         Vec3 relativePos = getRelativePosition(body, observer);
+        if (relativePos.length() == 0) return;
+
         Vec3 skyPos = relativePos.normalize().scale(100);
         float apparentSize = calculateApparentSize(body, relativePos);
 
@@ -224,32 +225,40 @@ public class SpaceObjectRenderer {
 
         double currentTime = solarSystem.getCurrentTime();
 
-        if (body.tidallyLocked && body.parent != null) {
-            double timeInDays = currentTime / 24000.0;
+        if (body.tidallyLocked &&
+                body.parent != null &&
+                positionCache.containsKey(body) &&
+                positionCache.containsKey(body.parent)) {
 
-            double M = body.getMeanAnomaly(timeInDays);
+            Vec3 bodyAbs = positionCache.get(body);
+            Vec3 parentAbs = positionCache.get(body.parent);
 
-            poseStack.mulPose(Axis.YP.rotation((float) (M + body.tidalLockingOffset)));
-            poseStack.mulPose(Axis.ZP.rotation((float) body.axialTilt));
+            poseStack.mulPose(Axis.XP.rotation((float) body.axialTilt));
+            pointToPosition(poseStack, bodyAbs, parentAbs, body.tidalLockingOffset);
 
         } else {
-            double rotationAngle = body.getRotationAngle(currentTime);
-            poseStack.mulPose(Axis.YP.rotation((float) rotationAngle));
-            poseStack.mulPose(Axis.ZP.rotation((float) body.axialTilt));
+            poseStack.mulPose(Axis.XP.rotation((float) body.axialTilt));
+            poseStack.mulPose(Axis.YP.rotation((float) body.getRotationAngle(currentTime)));
         }
 
         poseStack.scale(apparentSize, apparentSize, apparentSize);
 
         Vec3 lightDir = lightSourcePos.subtract(relativePos).normalize();
-        Vector3f lightDirVec = new Vector3f((float)lightDir.x, (float)lightDir.y, (float)lightDir.z);
+        Vector3f lightDirVec = new Vector3f(
+                (float) lightDir.x,
+                (float) lightDir.y,
+                (float) lightDir.z
+        );
 
         RenderSystem.setShaderTexture(0, body.texture);
+
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 
         ShaderInstance shader = ModShaders.getCelestialBodyShader();
+
         if (shader != null) {
             ModShaders.setLightDirection(lightDirVec);
             ModShaders.setAmbientLight(0.15f);
@@ -261,28 +270,39 @@ public class SpaceObjectRenderer {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         sphereBuffer.bind();
-        sphereBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix,
-                shader != null ? shader : GameRenderer.getPositionTexColorShader());
+        sphereBuffer.drawWithShader(
+                poseStack.last().pose(),
+                projectionMatrix,
+                shader != null ? shader : GameRenderer.getPositionTexColorShader()
+        );
+
         VertexBuffer.unbind();
 
         poseStack.popPose();
     }
 
-    private static float calculatePlanetBrightness(CelestialBody body, Vec3 bodyPos, Vec3 lightPos) {
-        double distanceToLight = lightPos.length();
-        double distanceToObserver = bodyPos.length();
+    private static void pointToPosition(PoseStack poseStack, Vec3 from, Vec3 to, double offsetRadians) {
 
-        if (distanceToLight == 0 || distanceToObserver == 0) return 1.0f;
+        Vec3 direction = to.subtract(from);
+        if (direction.length() == 0) return;
 
-        double sunIllumination = 1.0 / (distanceToLight * distanceToLight);
-        double apparentBrightness = (body.albedo * body.radius * body.radius * sunIllumination) /
-                (distanceToObserver * distanceToObserver);
+        direction = direction.normalize();
 
-        apparentBrightness *= 2.4e21;
+        Vector3f modelForward = new Vector3f(1, 0.3f, 1);
+        modelForward.normalize();
 
-        return Math.min(Math.max((float)apparentBrightness, 0.15f), 1.0f);
+        Vector3f targetDir = new Vector3f(
+                (float) direction.x,
+                (float) direction.y,
+                (float) direction.z
+        );
+
+        Quaternionf rotation = new Quaternionf().rotationTo(modelForward, targetDir);
+
+        poseStack.mulPose(rotation);
+
+        poseStack.mulPose(Axis.YP.rotation((float) offsetRadians));
     }
-
 
     private static Vec3 getRelativePosition(CelestialBody target, CelestialBody observer) {
         Vec3 targetPos = positionCache.getOrDefault(target, Vec3.ZERO);

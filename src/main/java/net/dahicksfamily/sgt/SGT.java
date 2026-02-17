@@ -3,12 +3,14 @@ package net.dahicksfamily.sgt;
 import net.dahicksfamily.sgt.SkyRendering.CelestialBuffers;
 import net.dahicksfamily.sgt.SkyRendering.SpaceObjectRenderer;
 import net.dahicksfamily.sgt.block.ModBlocks;
+import net.dahicksfamily.sgt.dimension.SpaceDimensionEffects;
 import net.dahicksfamily.sgt.item.ModItems;
 import net.dahicksfamily.sgt.keybind.ModKeyBindings;
 import net.dahicksfamily.sgt.space.CelestialBody;
 import net.dahicksfamily.sgt.space.PlanetsProvider;
 import net.dahicksfamily.sgt.space.SolarSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -130,6 +132,11 @@ public class SGT
         @SubscribeEvent
         public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
             ModKeyBindings.register(event);
+        }
+
+        @SubscribeEvent
+        public static void onRegisterDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
+            event.register(new ResourceLocation("sgt", "spacedim"), new SpaceDimensionEffects());
         }
     }
 }

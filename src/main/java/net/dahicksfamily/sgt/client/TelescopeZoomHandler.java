@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = "sgt", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class TelescopeZoomHandler {
 
-    private static final float TELESCOPE_ZOOM = 0.001f;
-    private static final double SENSITIVITY_SCALE = 0.000005;
+    private static final float TELESCOPE_ZOOM = 0.0005f;
+    private static final double SENSITIVITY_SCALE = 0.0000000005;
 
     private static Double originalSensitivity = null;
 

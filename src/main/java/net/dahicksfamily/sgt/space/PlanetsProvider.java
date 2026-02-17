@@ -66,7 +66,7 @@ public class PlanetsProvider {
         luna.albedo = 0.12f;
         luna.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/luna.png");
         luna.tidallyLocked = true;
-        luna.tidalLockingOffset = Math.toRadians(90); // 90 = front of texture faces Earth
+        luna.tidalLockingOffset = Math.toRadians(0); // 0 = front of texture faces Earth
         luna.longitudeAtEpoch = 0;
 
         luna.parent = earth;
