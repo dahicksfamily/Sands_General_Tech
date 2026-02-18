@@ -3,12 +3,14 @@ package net.dahicksfamily.sgt;
 import net.dahicksfamily.sgt.SkyRendering.CelestialBuffers;
 import net.dahicksfamily.sgt.SkyRendering.SpaceObjectRenderer;
 import net.dahicksfamily.sgt.block.ModBlocks;
+import net.dahicksfamily.sgt.commands.TimeScaleCommand;
 import net.dahicksfamily.sgt.dimension.SpaceDimensionEffects;
 import net.dahicksfamily.sgt.item.ModItems;
 import net.dahicksfamily.sgt.keybind.ModKeyBindings;
 import net.dahicksfamily.sgt.space.CelestialBody;
 import net.dahicksfamily.sgt.space.PlanetsProvider;
 import net.dahicksfamily.sgt.space.SolarSystem;
+import net.dahicksfamily.sgt.time.GlobalTime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -86,6 +88,7 @@ public class SGT
 
         @SubscribeEvent
         public static void onRegisterCommands(RegisterCommandsEvent event) {
+            TimeScaleCommand.register(event.getDispatcher());
         }
 
         @SubscribeEvent
@@ -101,17 +104,6 @@ public class SGT
                             SpaceObjectRenderer.toggleLabels();
                         }
                     }
-                }
-            }
-        }
-
-
-        @SubscribeEvent
-        public static void onClientTick(TickEvent.ClientTickEvent event) {
-            if (event.phase == TickEvent.Phase.END) {
-                Minecraft mc = Minecraft.getInstance();
-                if (mc.level != null) {
-                    SolarSystem.getInstance().syncWithWorld(mc.level);
                 }
             }
         }
@@ -137,6 +129,17 @@ public class SGT
         @SubscribeEvent
         public static void onRegisterDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
             event.register(new ResourceLocation("sgt", "spacedim"), new SpaceDimensionEffects());
+        }
+
+        @Mod.EventBusSubscriber(modid = SGT.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+        public static class ClientTickHandler {
+
+            @SubscribeEvent
+            public static void onClientTick(TickEvent.ClientTickEvent event) {
+                if (event.phase == TickEvent.Phase.END) {
+                    GlobalTime.getInstance().tick();
+                }
+            }
         }
     }
 }

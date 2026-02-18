@@ -1,26 +1,23 @@
 package net.dahicksfamily.sgt.space;
 
+import net.dahicksfamily.sgt.time.GlobalTime;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
 public class CelestialBody extends Orbit {
-    // Physical properties
-    public double mass;                 // kg
-    public double radius;               // km
-    public double rotationPeriod;       // sidereal day (hours)
-    public double axialTilt;            // obliquity (radians)
-    public double longitudeAtEpoch;     // rotation position at epoch
+    public double mass;
+    public double radius;
+    public double rotationPeriod;
+    public double axialTilt;
+    public double longitudeAtEpoch;
 
-    // Appearance
     public String name;
-    public ResourceLocation texture;    // for rendering
-    public float albedo;                // reflectivity (0-1)
+    public ResourceLocation texture;
+    public float albedo;
 
-    // Tidal locking
-    public boolean tidallyLocked;       // If true, always shows same face to parent
-    public double tidalLockingOffset;   // Radians - which longitude faces parent (0 = front of texture)
+    public boolean tidallyLocked;
+    public double tidalLockingOffset;
 
-    // Functions
     public double getSurfaceGravity() {
         return 0;
     }
@@ -41,30 +38,9 @@ public class CelestialBody extends Orbit {
         return null;
     }
 
-    /**
-     * Get rotation angle at a given time
-     * For tidally locked bodies, this ensures the same face points at parent
-     * @param time Current time in days
-     * @return Rotation angle in radians
-     */
     public double getRotationAngle(double time) {
-
-        if (tidallyLocked) {
-
-            double meanMotion = (2.0 * Math.PI) / rotationPeriod;
-
-            double timeDays = time / 24000.0;
-
-            double orbitalAngle = meanMotion * timeDays;
-
-            return orbitalAngle + tidalLockingOffset;
-
-        } else {
-
-            double timeHours = time * 24.0;
-            double rotations = timeHours / rotationPeriod;
-            return (rotations * 2.0 * Math.PI) + longitudeAtEpoch;
-        }
+        double timeHours = time * 24.0;
+        double rotations = timeHours / rotationPeriod;
+        return (rotations * 2.0 * Math.PI) + longitudeAtEpoch;
     }
-
 }
