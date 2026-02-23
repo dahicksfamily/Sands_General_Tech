@@ -7,6 +7,7 @@ import net.dahicksfamily.sgt.client.ModShaders;
 import net.dahicksfamily.sgt.space.CelestialBody;
 import net.dahicksfamily.sgt.space.SolarSystem;
 import net.dahicksfamily.sgt.space.Star;
+import net.dahicksfamily.sgt.time.GlobalTime;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -84,23 +85,30 @@ public class SpaceObjectRenderer {
         }
 
         CelestialBody observer = solarSystem.getBodyAtDimension(dimension);
+
+        GlobalTime.getInstance().setCurrentObserver(observer);
+
         List<CelestialBody> visibleBodies = solarSystem.getVisibleBodies(dimension);
 
         poseStack.pushPose();
 
-        double seasonalTilt = 0;
         if (observer != null) {
-            double timeInDays = currentTime / 24000.0;
+            double latitude = Math.toRadians(45.0);
+            double axialTilt = observer.axialTilt;
 
-            double yearProgress = (timeInDays % observer.period) / observer.period;
-            seasonalTilt = observer.axialTilt * Math.cos(2 * Math.PI * yearProgress);
+            double timeInHours = GlobalTime.getInstance().getTotalDays() * 24.0;
+            double rotationProgress = (timeInHours % observer.rotationPeriod) / observer.rotationPeriod;
+            double skyRotationAngle = rotationProgress * 2.0 * Math.PI;
 
-            poseStack.mulPose(Axis.XP.rotation((float) seasonalTilt));
-
-            System.out.println(observer.name + " seasonal tilt: " + Math.toDegrees(seasonalTilt) + "° (day: " + timeInDays + ")");
+            poseStack.mulPose(Axis.XP.rotationDegrees(90f));
+            poseStack.mulPose(Axis.ZP.rotationDegrees((float)(90.0 - Math.toDegrees(latitude))));
+            poseStack.mulPose(Axis.XP.rotation((float) axialTilt));
+            poseStack.mulPose(Axis.ZP.rotation((float) skyRotationAngle));
         }
 
         for (CelestialBody body : visibleBodies) {
+            Vec3 rel = getRelativePosition(body, observer);
+            Vec3 sky = rel.normalize().scale(100);
             if (body instanceof Star) {
                 renderStar(poseStack, projectionMatrix, (Star) body, observer);
             } else {
@@ -120,9 +128,16 @@ public class SpaceObjectRenderer {
     private static void renderLabel(PoseStack poseStack, Matrix4f projectionMatrix,
                                     String name, Vec3 skyPos, CelestialBody body, Camera camera, CelestialBody observer) {
 
+        if (observer != null && body.name.equals(observer.name)) {
+            return;
+        }
+
+        Vec3 relativePos = getRelativePosition(body, observer);
+        if (relativePos.length() == 0) return;
+
         poseStack.pushPose();
 
-        poseStack.translate(skyPos.x, skyPos.y + calculateApparentSize(body, getRelativePosition(body, observer)) * (Math.PI - 1.5), skyPos.z);
+        poseStack.translate(skyPos.x, skyPos.y + calculateApparentSize(body, relativePos) * (Math.PI - 1.5), skyPos.z);
 
         poseStack.mulPose(Axis.YP.rotationDegrees(-camera.getYRot()));
         poseStack.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
@@ -164,6 +179,8 @@ public class SpaceObjectRenderer {
                                    Star star, CelestialBody observer) {
 
         Vec3 relativePos = getRelativePosition(star, observer);
+        if (relativePos.length() == 0) return;
+
         Vec3 skyPos = relativePos.normalize().scale(100);
         float apparentSize = calculateApparentSize(star, relativePos);
 
@@ -237,8 +254,8 @@ public class SpaceObjectRenderer {
             pointToPosition(poseStack, bodyAbs, parentAbs, body.tidalLockingOffset);
 
         } else {
-            poseStack.mulPose(Axis.XP.rotation((float) body.axialTilt));
             poseStack.mulPose(Axis.YP.rotation((float) body.getRotationAngle(currentTime)));
+            poseStack.mulPose(Axis.XP.rotation((float) body.axialTilt));
         }
 
         poseStack.scale(apparentSize, apparentSize, apparentSize);
@@ -315,8 +332,10 @@ public class SpaceObjectRenderer {
         positionCache.clear();
 
         for (CelestialBody body : solarSystem.getBodies()) {
-            Vec3 absolutePos = solarSystem.getAbsolutePosition(body);
-            positionCache.put(body, absolutePos);
+            positionCache.put(body, solarSystem.getAbsolutePosition(body));
+        }
+        for (Star star : solarSystem.getStars()) {
+            positionCache.put(star, solarSystem.getAbsolutePosition(star));
         }
     }
 

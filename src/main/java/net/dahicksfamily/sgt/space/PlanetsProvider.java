@@ -103,6 +103,347 @@ public class PlanetsProvider {
         mars.period = 686.98;
 
         registerCelestialBody(mars);
+
+        CelestialBody mercury = new CelestialBody();
+        mercury.name = "Mercury";
+        mercury.mass = 3.285e23;
+        mercury.radius = 2439.7;
+        mercury.rotationPeriod = 1407.6; // hours (58.65 days)
+        mercury.axialTilt = Math.toRadians(0.034);
+        mercury.albedo = 0.088f;
+        mercury.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/mercury.png");
+        mercury.tidallyLocked = false;
+        mercury.longitudeAtEpoch = 0;
+        mercury.parent = sol;
+        mercury.semiMajorAxis = 0.387;
+        mercury.eccentricity = 0.2056;
+        mercury.inclination = Math.toRadians(7.005);
+        mercury.longitudeOfAscendingNode = Math.toRadians(48.33);
+        mercury.argumentOfPeriapsis = Math.toRadians(29.12);
+        mercury.meanAnomalyAtEpoch = 0;
+        mercury.epoch = 0;
+        mercury.period = 87.97;
+        registerCelestialBody(mercury);
+
+        CelestialBody venus = new CelestialBody();
+        venus.name = "Venus";
+        venus.mass = 4.867e24;
+        venus.radius = 6051.8;
+        venus.rotationPeriod = -5832.5; // negative = retrograde rotation
+        venus.axialTilt = Math.toRadians(177.36);
+        venus.albedo = 0.689f;
+        venus.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/venus.png");
+        venus.tidallyLocked = false;
+        venus.longitudeAtEpoch = 0;
+        venus.parent = sol;
+        venus.semiMajorAxis = 0.723;
+        venus.eccentricity = 0.0067;
+        venus.inclination = Math.toRadians(3.394);
+        venus.longitudeOfAscendingNode = Math.toRadians(76.68);
+        venus.argumentOfPeriapsis = Math.toRadians(54.85);
+        venus.meanAnomalyAtEpoch = 0;
+        venus.epoch = 0;
+        venus.period = 224.70;
+        registerCelestialBody(venus);
+
+        CelestialBody jupiter = new CelestialBody();
+        jupiter.name = "Jupiter";
+        jupiter.mass = 1.898e27;
+        jupiter.radius = 69911;
+        jupiter.rotationPeriod = 9.925; // hours
+        jupiter.axialTilt = Math.toRadians(3.13);
+        jupiter.albedo = 0.343f;
+        jupiter.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/jupiter.png");
+        jupiter.tidallyLocked = false;
+        jupiter.longitudeAtEpoch = 0;
+        jupiter.parent = sol;
+        jupiter.semiMajorAxis = 5.203;
+        jupiter.eccentricity = 0.0489;
+        jupiter.inclination = Math.toRadians(1.303);
+        jupiter.longitudeOfAscendingNode = Math.toRadians(100.46);
+        jupiter.argumentOfPeriapsis = Math.toRadians(273.87);
+        jupiter.meanAnomalyAtEpoch = 0;
+        jupiter.epoch = 0;
+        jupiter.period = 4332.59;
+        registerCelestialBody(jupiter);
+
+        CelestialBody saturn = new CelestialBody();
+        saturn.name = "Saturn";
+        saturn.mass = 5.683e26;
+        saturn.radius = 58232;
+        saturn.rotationPeriod = 10.656; // hours
+        saturn.axialTilt = Math.toRadians(26.73);
+        saturn.albedo = 0.342f;
+        saturn.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/saturn.png");
+        saturn.tidallyLocked = false;
+        saturn.longitudeAtEpoch = 0;
+        saturn.parent = sol;
+        saturn.semiMajorAxis = 9.537;
+        saturn.eccentricity = 0.0565;
+        saturn.inclination = Math.toRadians(2.485);
+        saturn.longitudeOfAscendingNode = Math.toRadians(113.72);
+        saturn.argumentOfPeriapsis = Math.toRadians(339.39);
+        saturn.meanAnomalyAtEpoch = 0;
+        saturn.epoch = 0;
+        saturn.period = 10759.22;
+        registerCelestialBody(saturn);
+
+        CelestialBody uranus = new CelestialBody();
+        uranus.name = "Uranus";
+        uranus.mass = 8.681e25;
+        uranus.radius = 25362;
+        uranus.rotationPeriod = -17.24; // retrograde
+        uranus.axialTilt = Math.toRadians(97.77);
+        uranus.albedo = 0.300f;
+        uranus.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/uranus.png");
+        uranus.tidallyLocked = false;
+        uranus.longitudeAtEpoch = 0;
+        uranus.parent = sol;
+        uranus.semiMajorAxis = 19.191;
+        uranus.eccentricity = 0.0457;
+        uranus.inclination = Math.toRadians(0.772);
+        uranus.longitudeOfAscendingNode = Math.toRadians(74.01);
+        uranus.argumentOfPeriapsis = Math.toRadians(96.54);
+        uranus.meanAnomalyAtEpoch = 0;
+        uranus.epoch = 0;
+        uranus.period = 30688.5;
+        registerCelestialBody(uranus);
+
+        CelestialBody neptune = new CelestialBody();
+        neptune.name = "Neptune";
+        neptune.mass = 1.024e26;
+        neptune.radius = 24622;
+        neptune.rotationPeriod = 16.11; // hours
+        neptune.axialTilt = Math.toRadians(28.32);
+        neptune.albedo = 0.290f;
+        neptune.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/neptune.png");
+        neptune.tidallyLocked = false;
+        neptune.longitudeAtEpoch = 0;
+        neptune.parent = sol;
+        neptune.semiMajorAxis = 30.069;
+        neptune.eccentricity = 0.0113;
+        neptune.inclination = Math.toRadians(1.769);
+        neptune.longitudeOfAscendingNode = Math.toRadians(131.72);
+        neptune.argumentOfPeriapsis = Math.toRadians(273.19);
+        neptune.meanAnomalyAtEpoch = 0;
+        neptune.epoch = 0;
+        neptune.period = 60182.0;
+        registerCelestialBody(neptune);
+
+        CelestialBody pluto = new CelestialBody();
+        pluto.name = "Pluto";
+        pluto.mass = 1.309e22;
+        pluto.radius = 1188.3;
+        pluto.rotationPeriod = -153.2928; // hours (retrograde, 6.39 days)
+        pluto.axialTilt = Math.toRadians(122.53);
+        pluto.albedo = 0.52f;
+        pluto.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/pluto.png");
+        pluto.tidallyLocked = false;
+        pluto.longitudeAtEpoch = 0;
+
+        pluto.parent = sol;
+        pluto.semiMajorAxis = 39.482;
+        pluto.eccentricity = 0.2488;
+        pluto.inclination = Math.toRadians(17.16);
+        pluto.longitudeOfAscendingNode = Math.toRadians(110.30);
+        pluto.argumentOfPeriapsis = Math.toRadians(113.76);
+        pluto.meanAnomalyAtEpoch = 0;
+        pluto.epoch = 0;
+        pluto.period = 90560;
+
+        registerCelestialBody(pluto);
+
+        CelestialBody phobos = new CelestialBody();
+        phobos.name = "Phobos";
+        phobos.mass = 1.0659e16;
+        phobos.radius = 11.2667;
+        phobos.rotationPeriod = 7.65;
+        phobos.axialTilt = 0;
+        phobos.albedo = 0.071f;
+        phobos.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/phobos.png");
+        phobos.tidallyLocked = true;
+        phobos.tidalLockingOffset = 0;
+        phobos.longitudeAtEpoch = 0;
+
+        phobos.parent = mars;
+        phobos.semiMajorAxis = 9376;
+        phobos.eccentricity = 0.0151;
+        phobos.inclination = 0;
+        phobos.longitudeOfAscendingNode = 0;
+        phobos.argumentOfPeriapsis = 0;
+        phobos.meanAnomalyAtEpoch = 0;
+        phobos.epoch = 0;
+        phobos.period = 0.3189;
+
+        registerCelestialBody(phobos);
+
+        CelestialBody deimos = new CelestialBody();
+        deimos.name = "Deimos";
+        deimos.mass = 1.4762e15;
+        deimos.radius = 6.2;
+        deimos.rotationPeriod = 30.35;
+        deimos.axialTilt = 0;
+        deimos.albedo = 0.068f;
+        deimos.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/deimos.png");
+        deimos.tidallyLocked = true;
+        deimos.tidalLockingOffset = 0;
+        deimos.longitudeAtEpoch = 0;
+
+        deimos.parent = mars;
+        deimos.semiMajorAxis = 23463;
+        deimos.eccentricity = 0.0002;
+        deimos.inclination = 0;
+        deimos.longitudeOfAscendingNode = 0;
+        deimos.argumentOfPeriapsis = 0;
+        deimos.meanAnomalyAtEpoch = 0;
+        deimos.epoch = 0;
+        deimos.period = 1.263;
+
+        registerCelestialBody(deimos);
+
+        CelestialBody io = new CelestialBody();
+        io.name = "Io";
+        io.mass = 8.93e22;
+        io.radius = 1821.6;
+        io.rotationPeriod = 42.46;
+        io.axialTilt = 0;
+        io.albedo = 0.63f;
+        io.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/io.png");
+        io.tidallyLocked = true;
+        io.tidalLockingOffset = 0;
+        io.longitudeAtEpoch = 0;
+
+        io.parent = jupiter;
+        io.semiMajorAxis = 421700;
+        io.eccentricity = 0.0041;
+        io.inclination = 0;
+        io.longitudeOfAscendingNode = 0;
+        io.argumentOfPeriapsis = 0;
+        io.meanAnomalyAtEpoch = 0;
+        io.epoch = 0;
+        io.period = 1.769;
+
+        registerCelestialBody(io);
+
+        CelestialBody europa = new CelestialBody();
+        europa.name = "Europa";
+        europa.mass = 4.80e22;
+        europa.radius = 1560.8;
+        europa.rotationPeriod = 85.23;
+        europa.axialTilt = 0;
+        europa.albedo = 0.67f;
+        europa.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/europa.png");
+        europa.tidallyLocked = true;
+        europa.tidalLockingOffset = 0;
+        europa.longitudeAtEpoch = 0;
+
+        europa.parent = jupiter;
+        europa.semiMajorAxis = 670900;
+        europa.eccentricity = 0.009;
+        europa.inclination = 0;
+        europa.longitudeOfAscendingNode = 0;
+        europa.argumentOfPeriapsis = 0;
+        europa.meanAnomalyAtEpoch = 0;
+        europa.epoch = 0;
+        europa.period = 3.551;
+
+        registerCelestialBody(europa);
+
+        CelestialBody ganymede = new CelestialBody();
+        ganymede.name = "Ganymede";
+        ganymede.mass = 1.48e23;
+        ganymede.radius = 2634.1;
+        ganymede.rotationPeriod = 171.7;
+        ganymede.axialTilt = 0;
+        ganymede.albedo = 0.43f;
+        ganymede.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/ganymede.png");
+        ganymede.tidallyLocked = true;
+        ganymede.tidalLockingOffset = 0;
+        ganymede.longitudeAtEpoch = 0;
+
+        ganymede.parent = jupiter;
+        ganymede.semiMajorAxis = 1070400;
+        ganymede.eccentricity = 0.0013;
+        ganymede.inclination = 0;
+        ganymede.longitudeOfAscendingNode = 0;
+        ganymede.argumentOfPeriapsis = 0;
+        ganymede.meanAnomalyAtEpoch = 0;
+        ganymede.epoch = 0;
+        ganymede.period = 7.155;
+
+        registerCelestialBody(ganymede);
+
+        CelestialBody callisto = new CelestialBody();
+        callisto.name = "Callisto";
+        callisto.mass = 1.08e23;
+        callisto.radius = 2410.3;
+        callisto.rotationPeriod = 400.5;
+        callisto.axialTilt = 0;
+        callisto.albedo = 0.19f;
+        callisto.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/callisto.png");
+        callisto.tidallyLocked = true;
+        callisto.tidalLockingOffset = 0;
+        callisto.longitudeAtEpoch = 0;
+
+        callisto.parent = jupiter;
+        callisto.semiMajorAxis = 1882700;
+        callisto.eccentricity = 0.0074;
+        callisto.inclination = 0;
+        callisto.longitudeOfAscendingNode = 0;
+        callisto.argumentOfPeriapsis = 0;
+        callisto.meanAnomalyAtEpoch = 0;
+        callisto.epoch = 0;
+        callisto.period = 16.689;
+
+        registerCelestialBody(callisto);
+
+        CelestialBody titan = new CelestialBody();
+        titan.name = "Titan";
+        titan.mass = 1.345e23;
+        titan.radius = 2574.7;
+        titan.rotationPeriod = 382.68;
+        titan.axialTilt = 0;
+        titan.albedo = 0.22f;
+        titan.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/titan.png");
+        titan.tidallyLocked = true;
+        titan.tidalLockingOffset = 0;
+        titan.longitudeAtEpoch = 0;
+
+        titan.parent = saturn;
+        titan.semiMajorAxis = 1221870;
+        titan.eccentricity = 0.0288;
+        titan.inclination = 0;
+        titan.longitudeOfAscendingNode = 0;
+        titan.argumentOfPeriapsis = 0;
+        titan.meanAnomalyAtEpoch = 0;
+        titan.epoch = 0;
+        titan.period = 15.945;
+
+        registerCelestialBody(titan);
+
+        CelestialBody triton = new CelestialBody();
+        triton.name = "Triton";
+        triton.mass = 2.14e22;
+        triton.radius = 1353.4;
+        triton.rotationPeriod = -141.04; // retrograde
+        triton.axialTilt = 0;
+        triton.albedo = 0.76f;
+        triton.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/triton.png");
+        triton.tidallyLocked = true;
+        triton.tidalLockingOffset = 0;
+        triton.longitudeAtEpoch = 0;
+
+        triton.parent = neptune;
+        triton.semiMajorAxis = 354759;
+        triton.eccentricity = 0.000016;
+        triton.inclination = Math.toRadians(156.865);
+        triton.longitudeOfAscendingNode = 0;
+        triton.argumentOfPeriapsis = 0;
+        triton.meanAnomalyAtEpoch = 0;
+        triton.epoch = 0;
+        triton.period = 5.877;
+
+        registerCelestialBody(triton);
     }
 
     private static void registerCelestialBody(CelestialBody body) {

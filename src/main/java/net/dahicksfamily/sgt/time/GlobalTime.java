@@ -1,5 +1,11 @@
 package net.dahicksfamily.sgt.time;
 
+import net.dahicksfamily.sgt.space.CelestialBody;
+import net.dahicksfamily.sgt.space.SolarSystem;
+import net.dahicksfamily.sgt.space.Star;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+
 public class GlobalTime {
 
     private static GlobalTime instance;
@@ -8,13 +14,14 @@ public class GlobalTime {
     private double timeScale = 1.0;
     private long lastRealTime;
 
+    private CelestialBody currentObserver;
+
     private static final double SECONDS_PER_DAY = 86400.0;
-    private static final double DAYS_PER_YEAR = 365.25;
-    private static final double EPOCH_OFFSET = 0.0;
 
     private GlobalTime() {
         this.totalSeconds = 0.0;
         this.lastRealTime = System.currentTimeMillis();
+        this.currentObserver = null;
     }
 
     public static GlobalTime getInstance() {
@@ -29,6 +36,14 @@ public class GlobalTime {
         double deltaSeconds = (currentRealTime - lastRealTime) / 1000.0;
         this.totalSeconds += deltaSeconds * timeScale;
         this.lastRealTime = currentRealTime;
+    }
+
+    public void setCurrentObserver(CelestialBody observer) {
+        this.currentObserver = observer;
+    }
+
+    public CelestialBody getCurrentObserver() {
+        return this.currentObserver;
     }
 
     public void setTimeScale(double scale) {
@@ -48,7 +63,10 @@ public class GlobalTime {
     }
 
     public double getTotalYears() {
-        return getTotalDays() / DAYS_PER_YEAR;
+        if (currentObserver == null) {
+            return getTotalDays() / 365.25;
+        }
+        return getTotalDays() / currentObserver.period;
     }
 
     public int getYear() {
@@ -56,30 +74,61 @@ public class GlobalTime {
     }
 
     public int getDayOfYear() {
+        if (currentObserver == null) {
+            double totalDays = getTotalDays();
+            double yearStart = Math.floor(totalDays / 365.25) * 365.25;
+            return (int) Math.floor(totalDays - yearStart);
+        }
+
         double totalDays = getTotalDays();
-        double yearStart = Math.floor(totalDays / DAYS_PER_YEAR) * DAYS_PER_YEAR;
+        double yearStart = Math.floor(totalDays / currentObserver.period) * currentObserver.period;
         return (int) Math.floor(totalDays - yearStart);
     }
 
     public int getHour() {
-        double dayProgress = (totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_DAY;
+        if (currentObserver == null) {
+            double dayProgress = (totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_DAY;
+            return (int) Math.floor(dayProgress * 24.0);
+        }
+
+        double rotationPeriodSeconds = currentObserver.rotationPeriod * 3600.0;
+        double dayProgress = (totalSeconds % rotationPeriodSeconds) / rotationPeriodSeconds;
         return (int) Math.floor(dayProgress * 24.0);
     }
 
     public int getMinute() {
-        double dayProgress = (totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_DAY;
+        if (currentObserver == null) {
+            double dayProgress = (totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_DAY;
+            double hourProgress = (dayProgress * 24.0) % 1.0;
+            return (int) Math.floor(hourProgress * 60.0);
+        }
+
+        double rotationPeriodSeconds = currentObserver.rotationPeriod * 3600.0;
+        double dayProgress = (totalSeconds % rotationPeriodSeconds) / rotationPeriodSeconds;
         double hourProgress = (dayProgress * 24.0) % 1.0;
         return (int) Math.floor(hourProgress * 60.0);
     }
 
     public int getSecond() {
-        double dayProgress = (totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_DAY;
+        if (currentObserver == null) {
+            double dayProgress = (totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_DAY;
+            double minuteProgress = (dayProgress * 24.0 * 60.0) % 1.0;
+            return (int) Math.floor(minuteProgress * 60.0);
+        }
+
+        double rotationPeriodSeconds = currentObserver.rotationPeriod * 3600.0;
+        double dayProgress = (totalSeconds % rotationPeriodSeconds) / rotationPeriodSeconds;
         double minuteProgress = (dayProgress * 24.0 * 60.0) % 1.0;
         return (int) Math.floor(minuteProgress * 60.0);
     }
 
     public double getDayProgress() {
-        return (totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_DAY;
+        if (currentObserver == null) {
+            return (totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_DAY;
+        }
+
+        double rotationPeriodSeconds = currentObserver.rotationPeriod * 3600.0;
+        return (totalSeconds % rotationPeriodSeconds) / rotationPeriodSeconds;
     }
 
     public float getTimeOfDay() {
@@ -87,21 +136,44 @@ public class GlobalTime {
     }
 
     public float getSunAngle() {
-        double dayProgress = getDayProgress();
+        if (currentObserver == null) return 0;
 
-        if (dayProgress < 0.25) {
-            return (float) (dayProgress / 0.25 * 0.25);
-        } else if (dayProgress < 0.5) {
-            return (float) (0.25 + (dayProgress - 0.25) / 0.25 * 0.25);
-        } else if (dayProgress < 0.75) {
-            return (float) (0.5 + (dayProgress - 0.5) / 0.25 * 0.25);
-        } else {
-            return (float) (0.75 + (dayProgress - 0.75) / 0.25 * 0.25);
-        }
+        SolarSystem solarSystem = SolarSystem.getInstance();
+        var stars = solarSystem.getStars();
+        if (stars.isEmpty()) return 0;
+
+        Star sun = stars.get(0);
+
+        Vec3 toSun = solarSystem.getAbsolutePosition(sun)
+                .subtract(solarSystem.getAbsolutePosition(currentObserver))
+                .normalize();
+
+        double tilt = currentObserver.axialTilt;
+        double sx = toSun.x;
+        double sy = toSun.y * Math.cos(tilt) - toSun.z * Math.sin(tilt);
+
+        double timeInHours = getTotalDays() * 24.0;
+        double skyRot = (timeInHours % currentObserver.rotationPeriod)
+                / currentObserver.rotationPeriod * 2.0 * Math.PI;
+
+        double elevation = sx * Math.cos(skyRot) + sy * Math.sin(skyRot);  // +1=noon, -1=midnight
+        double east      = sx * -Math.sin(skyRot) + sy * Math.cos(skyRot); // +1=rising, -1=setting
+
+        double angle = Math.atan2(elevation, -east) / (2.0 * Math.PI);
+        if (angle < 0) angle += 1.0;
+
+        return (float) angle;
     }
 
+
     public long getMinecraftTicks() {
-        return (long) (getTotalDays() * 24000L);
+        if (currentObserver == null) {
+            return (long) (getTotalDays() * 24000L);
+        }
+
+        double timeInHours = getTotalDays() * 24.0;
+        double dayProgress = (timeInHours % currentObserver.rotationPeriod) / currentObserver.rotationPeriod;
+        return (long) (dayProgress * 24000L);
     }
 
     public void setFromMinecraftTicks(long ticks) {
@@ -111,6 +183,20 @@ public class GlobalTime {
 
     public void setTotalDays(double days) {
         this.totalSeconds = days * SECONDS_PER_DAY;
+    }
+
+    public double getYearProgress() {
+        if (currentObserver == null) {
+            double totalDays = getTotalDays();
+            double daysIntoYear = totalDays % 365.25;
+            if (daysIntoYear < 0) daysIntoYear += 365.25;
+            return daysIntoYear / 365.25;
+        }
+
+        double totalDays = getTotalDays();
+        double daysIntoYear = totalDays % currentObserver.period;
+        if (daysIntoYear < 0) daysIntoYear += currentObserver.period;
+        return daysIntoYear / currentObserver.period;
     }
 
     public String getFormattedTime() {
