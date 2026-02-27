@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.dahicksfamily.sgt.client.ModShaders;
 import net.dahicksfamily.sgt.space.atmosphere.Atmosphere;
+import net.dahicksfamily.sgt.space.Barycenter;
 import net.dahicksfamily.sgt.space.CelestialBody;
 import net.dahicksfamily.sgt.space.SolarSystem;
 import net.dahicksfamily.sgt.space.PlanetsProvider;
@@ -41,7 +42,6 @@ public class SpaceObjectRenderer {
 
     private static boolean showLabels = false;
 
-
     public static void toggleLabels() {
         showLabels = !showLabels;
         assert minecraft.player != null;
@@ -66,7 +66,6 @@ public class SpaceObjectRenderer {
 
         initialized = true;
     }
-
 
     public static void renderBodies(PoseStack poseStack, Matrix4f projectionMatrix,
                                     float partialTick, Camera camera) {
@@ -104,10 +103,11 @@ public class SpaceObjectRenderer {
             poseStack.mulPose(Axis.ZP.rotation((float) skyRotationAngle));
         }
 
-
         org.joml.Matrix3f skyRot = new org.joml.Matrix3f(poseStack.last().pose());
 
         for (CelestialBody body : visibleBodies) {
+            if (body instanceof Barycenter) continue;
+
             if (body instanceof Star star) {
                 renderStar(poseStack, projectionMatrix, star, observer, skyRot);
             } else {
@@ -123,7 +123,6 @@ public class SpaceObjectRenderer {
 
         poseStack.popPose();
     }
-
 
     private static void renderStar(PoseStack poseStack, Matrix4f projectionMatrix,
                                    Star star, CelestialBody observer, org.joml.Matrix3f skyRot) {
@@ -164,7 +163,6 @@ public class SpaceObjectRenderer {
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
-
 
     private static void renderPlanet(PoseStack poseStack, Matrix4f projectionMatrix,
                                      CelestialBody body, CelestialBody observer,
@@ -214,12 +212,11 @@ public class SpaceObjectRenderer {
         float starAngRadius = (distBodyToStar > 0)
                 ? (float) Math.atan(lightSource.radius / distBodyToStar) : 0f;
 
-
         java.util.List<double[]> casterCandidates = new java.util.ArrayList<>();
         java.util.List<ModShaders.ReflectedLight> reflectors = new java.util.ArrayList<>();
 
         for (CelestialBody other : PlanetsProvider.getAllBodies()) {
-            if (other == body || other instanceof Star) continue;
+            if (other == body || other instanceof Star || other instanceof Barycenter) continue;
 
             Vec3   otherAbsPos  = positionCache.getOrDefault(other, Vec3.ZERO);
             Vec3   toOther      = otherAbsPos.subtract(bodyAbsPos);
@@ -228,10 +225,13 @@ public class SpaceObjectRenderer {
             Vec3   toOtherUnit  = toOther.normalize();
             double dot          = toOtherUnit.dot(toStarUnit);
 
+            CelestialBody otherRealParent = realParent(other);
+            CelestialBody bodyRealParent  = realParent(body);
+
             boolean sameFamily =
-                    (other.parent != null && other.parent == body) ||
-                            (other.parent != null && body.parent != null && other.parent == body.parent) ||
-                            (other == body.parent);
+                    (otherRealParent == body) ||
+                            (otherRealParent != null && otherRealParent == bodyRealParent) ||
+                            (other == bodyRealParent);
 
             if (sameFamily && distToOther < distBodyToStar && dot > 0.0) {
                 float angRadius = (float) Math.atan(other.radius / distToOther);
@@ -310,7 +310,6 @@ public class SpaceObjectRenderer {
         if (atmoShader == null) return;
 
         float atmoScale = planetSize * (1.0f + atmo.outerHeightFraction);
-
         float planetRadiusFrac = 1.0f / (1.0f + atmo.outerHeightFraction);
 
         Vec3 skyPos = relativePos.normalize().scale(100);
@@ -350,7 +349,6 @@ public class SpaceObjectRenderer {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-
     private static void renderLabel(PoseStack poseStack, Matrix4f projectionMatrix,
                                     String name, Vec3 skyPos, CelestialBody body,
                                     Camera camera, CelestialBody observer,
@@ -386,7 +384,6 @@ public class SpaceObjectRenderer {
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-
         RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
 
@@ -403,6 +400,13 @@ public class SpaceObjectRenderer {
         poseStack.popPose();
     }
 
+    private static CelestialBody realParent(CelestialBody body) {
+        CelestialBody p = body.parent;
+        while (p instanceof Barycenter && p.parent != null) {
+            p = p.parent;
+        }
+        return p;
+    }
 
     private static float calculateApparentSize(CelestialBody body, Vec3 relativePos) {
         double distanceKm = relativePos.length();
