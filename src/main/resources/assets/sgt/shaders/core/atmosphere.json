@@ -1,0 +1,25 @@
+{
+  "vertex": "sgt:atmosphere",
+  "fragment": "sgt:atmosphere",
+  "samplers": [
+    { "name": "Sampler0" }
+  ],
+  "uniforms": [
+    { "name": "ModelViewMat",             "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "ProjMat",                  "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "LightDirection",           "type": "float", "count": 3,  "values": [ 0.0, 1.0, 0.0 ] },
+    { "name": "AmbientLight",             "type": "float", "count": 1,  "values": [ 0.1 ] },
+    { "name": "PlanetRadiusFraction",     "type": "float", "count": 1,  "values": [ 0.87 ] },
+    { "name": "SurfaceDensity",           "type": "float", "count": 1,  "values": [ 1.0  ] },
+    { "name": "ScaleHeight",              "type": "float", "count": 1,  "values": [ 0.085] },
+    { "name": "RayleighCoeff",            "type": "float", "count": 3,  "values": [ 0.48, 0.72, 1.0 ] },
+    { "name": "MieCoeff",                 "type": "float", "count": 3,  "values": [ 0.88, 0.88, 0.88] },
+    { "name": "MieDensity",               "type": "float", "count": 1,  "values": [ 0.06 ] },
+    { "name": "MieAnisotropy",            "type": "float", "count": 1,  "values": [ 0.76 ] },
+    { "name": "AirglowColor",             "type": "float", "count": 3,  "values": [ 0.08, 0.95, 0.28] },
+    { "name": "AirglowIntensity",         "type": "float", "count": 1,  "values": [ 0.016] },
+    { "name": "ShadowSoftness",           "type": "float", "count": 1,  "values": [ 0.14 ] },
+    { "name": "TerminatorBandColor",      "type": "float", "count": 3,  "values": [ 1.0, 0.45, 0.05] },
+    { "name": "TerminatorBandIntensity",  "type": "float", "count": 1,  "values": [ 0.0 ] }
+  ]
+}

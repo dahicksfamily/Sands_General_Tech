@@ -1,13 +1,28 @@
 {
   "vertex": "sgt:celestial_body",
   "fragment": "sgt:celestial_body",
-  "samplers": [
-    { "name": "Sampler0" }
-  ],
+  "samplers": [{ "name": "Sampler0" }],
   "uniforms": [
-    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
-    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
-    { "name": "LightDirection", "type": "float", "count": 3, "values": [ 0.0, 1.0, 0.0 ] },
-    { "name": "AmbientLight", "type": "float", "count": 1, "values": [ 0.1 ] }
+    { "name": "ModelViewMat",          "type": "matrix4x4", "count": 16, "values": [ 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 ] },
+    { "name": "ProjMat",               "type": "matrix4x4", "count": 16, "values": [ 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 ] },
+    { "name": "LightDirection",        "type": "float", "count": 3, "values": [ 0.0, 1.0, 0.0 ] },
+    { "name": "AmbientLight",          "type": "float", "count": 1, "values": [ 0.1 ] },
+    { "name": "StarRadius",            "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "ShadowCasterDir0",      "type": "float", "count": 3, "values": [ 0,0,-1 ] },
+    { "name": "ShadowCasterRadius0",   "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "ShadowCasterDir1",      "type": "float", "count": 3, "values": [ 0,0,-1 ] },
+    { "name": "ShadowCasterRadius1",   "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "ShadowCasterDir2",      "type": "float", "count": 3, "values": [ 0,0,-1 ] },
+    { "name": "ShadowCasterRadius2",   "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "ShadowCasterDir3",      "type": "float", "count": 3, "values": [ 0,0,-1 ] },
+    { "name": "ShadowCasterRadius3",   "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "ReflectedLightDir0",    "type": "float", "count": 3, "values": [ 0,1,0 ] },
+    { "name": "ReflectedLightColor0",  "type": "float", "count": 3, "values": [ 0,0,0 ] },
+    { "name": "ReflectedLightDir1",    "type": "float", "count": 3, "values": [ 0,1,0 ] },
+    { "name": "ReflectedLightColor1",  "type": "float", "count": 3, "values": [ 0,0,0 ] },
+    { "name": "ReflectedLightDir2",    "type": "float", "count": 3, "values": [ 0,1,0 ] },
+    { "name": "ReflectedLightColor2",  "type": "float", "count": 3, "values": [ 0,0,0 ] },
+    { "name": "ReflectedLightDir3",    "type": "float", "count": 3, "values": [ 0,1,0 ] },
+    { "name": "ReflectedLightColor3",  "type": "float", "count": 3, "values": [ 0,0,0 ] }
   ]
 }
