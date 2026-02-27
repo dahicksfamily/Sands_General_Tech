@@ -236,10 +236,8 @@ public class PlanetsProvider {
         pluto.axialTilt = Math.toRadians(122.53);
         pluto.albedo = 0.52f;
         pluto.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/pluto.png");
-        pluto.tidallyLocked = false;
+        pluto.tidallyLocked = true;
         pluto.longitudeAtEpoch = 0;
-        pluto.parent = sol;
-        pluto.semiMajorAxis = 39.482;
         pluto.eccentricity = 0.2488;
         pluto.inclination = Math.toRadians(17.16);
         pluto.longitudeOfAscendingNode = Math.toRadians(110.30);
@@ -470,7 +468,38 @@ public class PlanetsProvider {
         triton.atmosphere = tritonAtmo;
         registerCelestialBody(triton);
 
-        assignDimension(phobos, ModDimensions.SPACE_LEVEL_KEY);
+        CelestialBody charon = new CelestialBody();
+        charon.name = "Charon";
+        charon.mass = 1.586e21;
+        charon.radius = 606.0;
+        charon.rotationPeriod = -153.2928; // tidally locked with Pluto
+        charon.axialTilt = 0;
+        charon.albedo = 0.38f;
+        charon.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/charon.png");
+        charon.tidallyLocked = true;
+        charon.tidalLockingOffset = 0;
+        charon.longitudeAtEpoch = 0;
+        charon.eccentricity = 0.0;
+        charon.inclination = 0;
+        charon.longitudeOfAscendingNode = 0;
+        charon.argumentOfPeriapsis = 0;
+        charon.meanAnomalyAtEpoch = 0;
+        charon.epoch = 0;
+        charon.period = 6.387; // orbital period around Pluto barycenter (days)
+
+        registerCelestialBody(charon);
+
+        Barycenter plutoBary = Barycenter.of("Pluto-Charon Barycenter",
+                sol, 39.48, 90560.0, 0.249, Math.toRadians(17.1), 0.0);
+
+        pluto.parent = plutoBary;
+        pluto.semiMajorAxis = 2035;       // km - Pluto offset from barycentre
+
+        charon.parent = plutoBary;
+        charon.semiMajorAxis = 17536;     // km - Charon offset (opposite side)
+        charon.longitudeAtEpoch = Math.PI; // starts 180° from Pluto
+
+        assignDimension(charon, ModDimensions.SPACE_LEVEL_KEY);
     }
 
 
