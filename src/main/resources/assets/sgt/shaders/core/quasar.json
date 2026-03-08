@@ -1,0 +1,14 @@
+{
+  "vertex": "sgt:quasar",
+  "fragment": "sgt:quasar",
+  "samplers": [],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat",      "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "Time",         "type": "float",     "count": 1,  "values": [0.0] },
+    { "name": "JetAngle",     "type": "float",     "count": 1,  "values": [0.0] },
+    { "name": "Period",       "type": "float",     "count": 1,  "values": [10.0] },
+    { "name": "Amplitude",    "type": "float",     "count": 1,  "values": [0.3] },
+    { "name": "Phase",        "type": "float",     "count": 1,  "values": [0.0] }
+  ]
+}

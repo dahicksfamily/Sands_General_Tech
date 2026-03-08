@@ -4,13 +4,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
+import net.dahicksfamily.sgt.background.StarFieldRenderer;
+import net.dahicksfamily.sgt.background.SupernovaManager;
 import net.dahicksfamily.sgt.client.ModShaders;
+import net.dahicksfamily.sgt.space.*;
 import net.dahicksfamily.sgt.space.atmosphere.Atmosphere;
-import net.dahicksfamily.sgt.space.Barycenter;
-import net.dahicksfamily.sgt.space.CelestialBody;
-import net.dahicksfamily.sgt.space.SolarSystem;
-import net.dahicksfamily.sgt.space.PlanetsProvider;
-import net.dahicksfamily.sgt.space.Star;
 import net.dahicksfamily.sgt.time.GlobalTime;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -27,6 +25,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ public class SpaceObjectRenderer {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     private static VertexBuffer sphereBuffer;
+    private static final Map<String, VertexBuffer> ringBuffers = new HashMap<>();
     private static boolean initialized = false;
 
     private static final Map<CelestialBody, Vec3> positionCache = new HashMap<>();
@@ -42,30 +42,34 @@ public class SpaceObjectRenderer {
 
     private static boolean showLabels = false;
 
+
+
+
     public static void toggleLabels() {
         showLabels = !showLabels;
         assert minecraft.player != null;
         minecraft.player.displayClientMessage(
                 Component.literal("Planet Labels: " + (showLabels ? "ON" : "OFF")),
-                true
-        );
+                true);
     }
+
+
 
     public static void initialize() {
         if (initialized) return;
 
         sphereBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-
         RenderSystem.disableCull();
         BufferBuilder.RenderedBuffer sphereData = SphereGenerator.generateSphere(1.0f, 64, 32);
         RenderSystem.enableCull();
-
         sphereBuffer.bind();
         sphereBuffer.upload(sphereData);
         VertexBuffer.unbind();
 
         initialized = true;
     }
+
+
 
     public static void renderBodies(PoseStack poseStack, Matrix4f projectionMatrix,
                                     float partialTick, Camera camera) {
@@ -90,17 +94,29 @@ public class SpaceObjectRenderer {
         poseStack.pushPose();
 
         if (observer != null) {
-            double latitude = Math.toRadians(45.0);
+
+
+
+            double latitude  = Math.toRadians(90.0); 
             double axialTilt = observer.axialTilt;
 
-            double timeInHours = GlobalTime.getInstance().getTotalDays() * 24.0;
+            double timeInHours      = GlobalTime.getInstance().getTotalDays() * 24.0;
             double rotationProgress = (timeInHours % observer.rotationPeriod) / observer.rotationPeriod;
             double skyRotationAngle = rotationProgress * 2.0 * Math.PI;
 
+            if (observer == PlanetsProvider.getBodyByName("Space Orbiter")) {
+                skyRotationAngle = Math.PI / 2; 
+            }
+
             poseStack.mulPose(Axis.XP.rotationDegrees(90f));
-            poseStack.mulPose(Axis.ZP.rotationDegrees((float)(90.0 - Math.toDegrees(latitude))));
+            poseStack.mulPose(Axis.ZP.rotationDegrees((float)(90.0 - Math.toDegrees(latitude)))); 
             poseStack.mulPose(Axis.XP.rotation((float) axialTilt));
             poseStack.mulPose(Axis.ZP.rotation((float) skyRotationAngle));
+
+            org.joml.Matrix3f skyRot = new org.joml.Matrix3f(poseStack.last().pose());
+            StarFieldRenderer.render(poseStack, projectionMatrix, partialTick);
+
+
         }
 
         org.joml.Matrix3f skyRot = new org.joml.Matrix3f(poseStack.last().pose());
@@ -116,25 +132,28 @@ public class SpaceObjectRenderer {
 
             if (showLabels) {
                 Vec3 relativePos = getRelativePosition(body, observer);
-                Vec3 skyPos = relativePos.normalize().scale(100);
-                renderLabel(poseStack, projectionMatrix, body.name, skyPos, body, camera, observer, skyRot);
+                Vec3 skyPos      = relativePos.normalize().scale(100);
+                renderLabel(poseStack, projectionMatrix, body.name, skyPos,
+                        body, camera, observer, skyRot);
             }
         }
 
         poseStack.popPose();
     }
 
+ 
+
     private static void renderStar(PoseStack poseStack, Matrix4f projectionMatrix,
-                                   Star star, CelestialBody observer, org.joml.Matrix3f skyRot) {
+                                   Star star, CelestialBody observer,
+                                   org.joml.Matrix3f skyRot) {
 
         Vec3 relativePos = getRelativePosition(star, observer);
         if (relativePos.length() == 0) return;
 
-        Vec3 skyPos = relativePos.normalize().scale(100);
+        Vec3  skyPos       = relativePos.normalize().scale(100);
         float apparentSize = calculateApparentSize(star, relativePos);
-
-        Vec3 color = star.getColor();
-        float brightness = Math.min(star.getBrightness(relativePos) * 2.0f, 1.0f);
+        Vec3  color        = star.getColor();
+        float brightness   = Math.min(star.getBrightness(relativePos) * 2.0f, 1.0f);
 
         poseStack.pushPose();
         poseStack.translate(skyPos.x, skyPos.y, skyPos.z);
@@ -151,8 +170,7 @@ public class SpaceObjectRenderer {
                 (float) color.x * brightness,
                 (float) color.y * brightness,
                 (float) color.z * brightness,
-                1.0f
-        );
+                1.0f);
 
         sphereBuffer.bind();
         assert GameRenderer.getPositionTexColorShader() != null;
@@ -164,6 +182,8 @@ public class SpaceObjectRenderer {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
+ 
+
     private static void renderPlanet(PoseStack poseStack, Matrix4f projectionMatrix,
                                      CelestialBody body, CelestialBody observer,
                                      SolarSystem solarSystem, org.joml.Matrix3f skyRot) {
@@ -171,7 +191,7 @@ public class SpaceObjectRenderer {
         Vec3 relativePos = getRelativePosition(body, observer);
         if (relativePos.length() == 0) return;
 
-        Vec3 skyPos = relativePos.normalize().scale(100);
+        Vec3  skyPos       = relativePos.normalize().scale(100);
         float apparentSize = calculateApparentSize(body, relativePos);
 
         Star lightSource = solarSystem.getPrimaryLightSource(observer);
@@ -189,7 +209,6 @@ public class SpaceObjectRenderer {
                 body.parent != null &&
                 positionCache.containsKey(body) &&
                 positionCache.containsKey(body.parent)) {
-
             Vec3 bodyAbs   = positionCache.get(body);
             Vec3 parentAbs = positionCache.get(body.parent);
             poseStack.mulPose(Axis.XP.rotation((float) body.axialTilt));
@@ -201,55 +220,108 @@ public class SpaceObjectRenderer {
 
         poseStack.scale(apparentSize, apparentSize, apparentSize);
 
+ 
         Vector3f lightDirOrbital = new Vector3f(
                 (float) lightDir.x, (float) lightDir.y, (float) lightDir.z);
 
-        Vec3 bodyAbsPos = positionCache.getOrDefault(body, Vec3.ZERO);
-        Vec3 starAbsPos = positionCache.getOrDefault(lightSource, Vec3.ZERO);
-        Vec3 toStar     = starAbsPos.subtract(bodyAbsPos);
+        Vec3 bodyAbsPos       = positionCache.getOrDefault(body,        Vec3.ZERO);
+        Vec3 starAbsPos       = positionCache.getOrDefault(lightSource, Vec3.ZERO);
+        Vec3 toStar           = starAbsPos.subtract(bodyAbsPos);
         double distBodyToStar = toStar.length();
-        Vec3 toStarUnit = distBodyToStar > 0 ? toStar.normalize() : Vec3.ZERO;
-        float starAngRadius = (distBodyToStar > 0)
+        Vec3 toStarUnit       = distBodyToStar > 0 ? toStar.normalize() : Vec3.ZERO;
+
+ 
+ 
+ 
+ 
+        float starAngRadius = distBodyToStar > 0
                 ? (float) Math.atan(lightSource.radius / distBodyToStar) : 0f;
 
-        java.util.List<double[]> casterCandidates = new java.util.ArrayList<>();
-        java.util.List<ModShaders.ReflectedLight> reflectors = new java.util.ArrayList<>();
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+        List<double[]>                  casterCandidates = new ArrayList<>();
+        List<ModShaders.ReflectedLight> reflectors       = new ArrayList<>();
+
+ 
+        float scaledStarAngRadius = starAngRadius * ModShaders.SHADOW_VISUAL_SCALE;
 
         for (CelestialBody other : PlanetsProvider.getAllBodies()) {
             if (other == body || other instanceof Star || other instanceof Barycenter) continue;
 
-            Vec3   otherAbsPos  = positionCache.getOrDefault(other, Vec3.ZERO);
-            Vec3   toOther      = otherAbsPos.subtract(bodyAbsPos);
-            double distToOther  = toOther.length();
+            Vec3   otherAbsPos = positionCache.getOrDefault(other, Vec3.ZERO);
+            Vec3   toOther     = otherAbsPos.subtract(bodyAbsPos);
+            double distToOther = toOther.length();
             if (distToOther == 0) continue;
-            Vec3   toOtherUnit  = toOther.normalize();
-            double dot          = toOtherUnit.dot(toStarUnit);
 
-            CelestialBody otherRealParent = realParent(other);
-            CelestialBody bodyRealParent  = realParent(body);
+            Vec3   toOtherUnit = toOther.normalize();
+            double dot         = toOtherUnit.dot(toStarUnit);
+
+ 
+            CelestialBody otherDirectParent = other.parent;
+            CelestialBody bodyDirectParent  = body.parent;
 
             boolean sameFamily =
-                    (otherRealParent == body) ||
-                            (otherRealParent != null && otherRealParent == bodyRealParent) ||
-                            (other == bodyRealParent);
+                    (otherDirectParent == body) ||
+                            (other == bodyDirectParent) ||
+                            (otherDirectParent != null &&
+                                    bodyDirectParent  != null &&
+                                    otherDirectParent == bodyDirectParent &&
+                                    !(bodyDirectParent instanceof Star));
 
-            if (sameFamily && distToOther < distBodyToStar && dot > 0.0) {
-                float angRadius = (float) Math.atan(other.radius / distToOther);
+            if (sameFamily && dot > 0.0 && distToOther < distBodyToStar) {
+
+                float angRadius       = (float) Math.atan(other.radius / distToOther);
+                float scaledCasterRad = angRadius * ModShaders.SHADOW_VISUAL_SCALE;
+
+ 
+ 
+ 
+ 
+ 
+                float separation   = (float) Math.acos(Math.max(-1.0, Math.min(1.0, dot)));
+                float combinedDisk = scaledCasterRad + scaledStarAngRadius;
+                if (separation >= combinedDisk) continue; 
+
+ 
+                if (angRadius < starAngRadius * 0.05f) continue;
+
                 casterCandidates.add(new double[]{
-                        distToOther, angRadius,
-                        toOtherUnit.x, toOtherUnit.y, toOtherUnit.z
+                        distToOther,
+                        scaledCasterRad, 
+                        toOtherUnit.x, toOtherUnit.y, toOtherUnit.z 
                 });
             }
 
+ 
             if (sameFamily && reflectors.size() < 4 && other.albedo > 0 && dot > 0) {
                 double ratio      = other.radius / distToOther;
                 double irradiance = other.albedo * ratio * ratio;
                 if (irradiance > 0.001) {
                     Vec3 sc = lightSource.getColor();
                     reflectors.add(new ModShaders.ReflectedLight(
-                            new Vector3f((float)toOtherUnit.x,
-                                    (float)toOtherUnit.y,
-                                    (float)toOtherUnit.z),
+                            new Vector3f((float) toOtherUnit.x,
+                                    (float) toOtherUnit.y,
+                                    (float) toOtherUnit.z),
                             new Vector3f((float)(sc.x * irradiance),
                                     (float)(sc.y * irradiance),
                                     (float)(sc.z * irradiance))));
@@ -257,14 +329,14 @@ public class SpaceObjectRenderer {
             }
         }
 
+ 
         casterCandidates.sort((a, b) -> Double.compare(a[0], b[0]));
 
-        java.util.List<ModShaders.ShadowCaster> shadowCasters = new java.util.ArrayList<>();
-        for (int ci = 0; ci < Math.min(4, casterCandidates.size()); ci++) {
-            double[] c = casterCandidates.get(ci);
+        List<ModShaders.ShadowCaster> shadowCasters = new ArrayList<>(casterCandidates.size());
+        for (double[] c : casterCandidates) {
             shadowCasters.add(new ModShaders.ShadowCaster(
-                    new Vector3f((float)c[2], (float)c[3], (float)c[4]),
-                    (float)c[1]));
+                    new Vector3f((float) c[2], (float) c[3], (float) c[4]),
+                    (float) c[1]));
         }
 
         RenderSystem.setShaderTexture(0, body.texture);
@@ -275,28 +347,85 @@ public class SpaceObjectRenderer {
 
         final float AMBIENT = 0.15f;
         ShaderInstance bodyShader = ModShaders.getCelestialBodyShader();
-        if (bodyShader != null) {
-            ModShaders.setCelestialBodyLighting(
-                    skyRot, lightDirOrbital, starAngRadius, AMBIENT, shadowCasters, reflectors);
-            RenderSystem.setShader(() -> bodyShader);
+
+        ObjMesh obj = ObjMeshCache.get(body.name, body.texture);
+
+        if (obj != null) {
+ 
+ 
+ 
+ 
+ 
+ 
+            float correctedScale = apparentSize / obj.halfExtent;
+
+ 
+            poseStack.scale(1f / apparentSize, 1f / apparentSize, 1f / apparentSize);
+            poseStack.scale(correctedScale, correctedScale, correctedScale);
+
+ 
+            RenderSystem.setShaderTexture(0, obj.texture);
+
+            if (bodyShader != null) {
+                ModShaders.setCelestialBodyLighting(
+                        skyRot, lightDirOrbital,
+                        starAngRadius, AMBIENT,
+                        shadowCasters, reflectors);
+                RenderSystem.setShader(() -> bodyShader);
+            } else {
+                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            }
+
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            obj.vertexBuffer.bind();
+            obj.vertexBuffer.drawWithShader(
+                    poseStack.last().pose(), projectionMatrix,
+                    bodyShader != null ? bodyShader
+                            : GameRenderer.getPositionTexColorShader());
+            VertexBuffer.unbind();
+
         } else {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+ 
+            if (bodyShader != null) {
+                ModShaders.setCelestialBodyLighting(
+                        skyRot, lightDirOrbital,
+                        starAngRadius, AMBIENT,
+                        shadowCasters, reflectors);
+                RenderSystem.setShader(() -> bodyShader);
+            } else {
+                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            }
+
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            sphereBuffer.bind();
+            sphereBuffer.drawWithShader(
+                    poseStack.last().pose(), projectionMatrix,
+                    bodyShader != null ? bodyShader
+                            : GameRenderer.getPositionTexColorShader());
+            VertexBuffer.unbind();
         }
 
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        if (body.ring != null) {
+            if (ObjMeshCache.isIrregular(body.name)) {
+                if (obj != null) {
+                    float corrected = apparentSize / obj.halfExtent;
+                    poseStack.scale(1f / corrected, 1f / corrected, 1f / corrected);
+                    poseStack.scale(1f, 1f, 1f); 
+                    poseStack.scale(apparentSize, apparentSize, apparentSize);
+                }
+            }
+            renderRing(poseStack, projectionMatrix, body, lightDirOrbital, skyRot);
+        }
 
-        sphereBuffer.bind();
-        sphereBuffer.drawWithShader(
-                poseStack.last().pose(), projectionMatrix,
-                bodyShader != null ? bodyShader : GameRenderer.getPositionTexColorShader()
-        );
-        VertexBuffer.unbind();
         poseStack.popPose();
 
         if (body.hasAtmosphere()) {
-            renderAtmosphere(poseStack, projectionMatrix, body, relativePos, lightDir, apparentSize, skyRot);
+            renderAtmosphere(poseStack, projectionMatrix, body, relativePos,
+                    lightDir, apparentSize, skyRot);
         }
     }
+
+ 
 
     private static void renderAtmosphere(PoseStack poseStack, Matrix4f projectionMatrix,
                                          CelestialBody body, Vec3 relativePos,
@@ -309,23 +438,42 @@ public class SpaceObjectRenderer {
         ShaderInstance atmoShader = ModShaders.getAtmosphereShader();
         if (atmoShader == null) return;
 
-        float atmoScale = planetSize * (1.0f + atmo.outerHeightFraction);
+        float atmoScale        = planetSize * (1.0f + atmo.outerHeightFraction);
         float planetRadiusFrac = 1.0f / (1.0f + atmo.outerHeightFraction);
+        Vec3  skyPos           = relativePos.normalize().scale(100);
 
-        Vec3 skyPos = relativePos.normalize().scale(100);
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(false); 
+        RenderSystem.enableCull(); 
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(
                 GlStateManager.SourceFactor.SRC_ALPHA,
                 GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
                 GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
-        );
-        RenderSystem.disableDepthTest();
-        RenderSystem.disableCull();
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
         Vector3f lightDirView = skyRot.transform(
-                new org.joml.Vector3f((float)lightDir.x, (float)lightDir.y, (float)lightDir.z));
+                new Vector3f((float) lightDir.x, (float) lightDir.y, (float) lightDir.z));
         ModShaders.setAtmosphereUniforms(lightDirView, atmo, planetRadiusFrac, 0.15f);
 
         poseStack.pushPose();
@@ -342,12 +490,16 @@ public class SpaceObjectRenderer {
 
         poseStack.popPose();
 
+ 
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
+
+ 
 
     private static void renderLabel(PoseStack poseStack, Matrix4f projectionMatrix,
                                     String name, Vec3 skyPos, CelestialBody body,
@@ -359,28 +511,23 @@ public class SpaceObjectRenderer {
         Vec3 relativePos = getRelativePosition(body, observer);
         if (relativePos.length() == 0) return;
 
-        org.joml.Matrix4f accumMat = new org.joml.Matrix4f(poseStack.last().pose());
+        org.joml.Matrix4f  accumMat  = new org.joml.Matrix4f(poseStack.last().pose());
         accumMat.m30(0).m31(0).m32(0);
-        org.joml.Matrix4f cancelMat = accumMat.invert(new org.joml.Matrix4f());
+        org.joml.Matrix4f  cancelMat = accumMat.invert(new org.joml.Matrix4f());
         org.joml.Quaternionf cancelQ = cancelMat.getNormalizedRotation(new org.joml.Quaternionf());
 
         float bodyAppSize = calculateApparentSize(body, relativePos);
         float offsetDist  = bodyAppSize * 1.2f + 0.5f;
-        Vec3 labelPos = new Vec3(
-                skyPos.x,
-                skyPos.y + offsetDist,
-                skyPos.z);
+        Vec3  labelPos    = new Vec3(skyPos.x, skyPos.y + offsetDist, skyPos.z);
 
         poseStack.pushPose();
         poseStack.translate(labelPos.x, labelPos.y, labelPos.z);
         poseStack.mulPose(cancelQ);
+        poseStack.scale(0.05f, -0.05f, 0.05f);
 
-        float scale = 0.05f;
-        poseStack.scale(scale, -scale, scale);
-
-        Font font = minecraft.font;
-        Component text = Component.literal(name);
-        int textWidth = font.width(text);
+        Font      font      = minecraft.font;
+        Component text      = Component.literal(name);
+        int       textWidth = font.width(text);
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -396,23 +543,125 @@ public class SpaceObjectRenderer {
         RenderSystem.enableCull();
         RenderSystem.enableDepthTest();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-
         poseStack.popPose();
     }
 
+    private static VertexBuffer generateRingBuffer(CelestialRing ring) {
+ 
+        final int SEG = 256, RAD = 8;
+
+        BufferBuilder bb = new BufferBuilder(SEG * RAD * 6 * (3 + 2 + 1 + 3) * 4 + 64);
+        bb.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
+
+        for (int ri = 0; ri < RAD; ri++) {
+            float t0 = (float) ri       / RAD;
+            float t1 = (float)(ri + 1)  / RAD;
+            float r0 = ring.innerRadius + t0 * (ring.outerRadius - ring.innerRadius);
+            float r1 = ring.innerRadius + t1 * (ring.outerRadius - ring.innerRadius);
+            float u0 = t0, u1 = t1;
+
+            for (int si = 0; si < SEG; si++) {
+                double a0 = (double) si       / SEG * Math.PI * 2;
+                double a1 = (double)(si + 1)  / SEG * Math.PI * 2;
+                float  v0 = (float) si / SEG, v1 = (float)(si + 1) / SEG;
+
+                float cos0 = (float)Math.cos(a0), sin0 = (float)Math.sin(a0);
+                float cos1 = (float)Math.cos(a1), sin1 = (float)Math.sin(a1);
+
+ 
+                float x00 = r0*cos0, z00 = r0*sin0;
+                float x10 = r1*cos0, z10 = r1*sin0;
+                float x01 = r0*cos1, z01 = r0*sin1;
+                float x11 = r1*cos1, z11 = r1*sin1;
+
+ 
+                bb.vertex(x00,0,z00).uv(u0,v0).color(255,255,255,255).normal(0,1,0).endVertex();
+                bb.vertex(x10,0,z10).uv(u1,v0).color(255,255,255,255).normal(0,1,0).endVertex();
+                bb.vertex(x11,0,z11).uv(u1,v1).color(255,255,255,255).normal(0,1,0).endVertex();
+ 
+                bb.vertex(x00,0,z00).uv(u0,v0).color(255,255,255,255).normal(0,1,0).endVertex();
+                bb.vertex(x11,0,z11).uv(u1,v1).color(255,255,255,255).normal(0,1,0).endVertex();
+                bb.vertex(x01,0,z01).uv(u0,v1).color(255,255,255,255).normal(0,1,0).endVertex();
+            }
+        }
+
+        BufferBuilder.RenderedBuffer rendered = bb.end();
+        VertexBuffer vbo = new VertexBuffer(VertexBuffer.Usage.STATIC);
+        vbo.bind();
+        vbo.upload(rendered);
+        VertexBuffer.unbind();
+        return vbo;
+    }
+
+    private static VertexBuffer getRingBuffer(String bodyName, CelestialRing ring) {
+        return ringBuffers.computeIfAbsent(bodyName, k -> generateRingBuffer(ring));
+    }
+
+    private static void renderRing(PoseStack poseStack, Matrix4f projectionMatrix,
+                                   CelestialBody body, Vector3f lightDirOrbital,
+                                   org.joml.Matrix3f skyRot) {
+        CelestialRing ring = body.ring;
+        ShaderInstance ringShader = ModShaders.getRingShader();
+        if (ringShader == null) return;
+
+        VertexBuffer ringVbo = getRingBuffer(body.name, ring);
+
+ 
+        Vector3f lightDirView = skyRot.transform(new Vector3f(lightDirOrbital));
+
+ 
+ 
+ 
+ 
+        org.joml.Matrix3f mvRot    = new org.joml.Matrix3f(poseStack.last().pose());
+        org.joml.Matrix3f invRot   = new org.joml.Matrix3f();
+        mvRot.invert(invRot);
+        Vector3f lightDirModel = invRot.transform(new Vector3f(lightDirView));
+        lightDirModel.normalize();
+
+ 
+ 
+ 
+ 
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
+        ModShaders.setRingUniforms(lightDirView, lightDirModel, ring.opacity);
+        RenderSystem.setShader(() -> ringShader);
+        RenderSystem.setShaderTexture(0, ring.texture);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+        ringVbo.bind();
+        ringVbo.drawWithShader(poseStack.last().pose(), projectionMatrix, ringShader);
+        VertexBuffer.unbind();
+
+ 
+        RenderSystem.depthMask(true);
+        RenderSystem.enableCull();
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+ 
+
     private static CelestialBody realParent(CelestialBody body) {
         CelestialBody p = body.parent;
-        while (p instanceof Barycenter && p.parent != null) {
-            p = p.parent;
-        }
+        while (p instanceof Barycenter && p.parent != null) p = p.parent;
         return p;
     }
 
     private static float calculateApparentSize(CelestialBody body, Vec3 relativePos) {
         double distanceKm = relativePos.length();
         if (distanceKm == 0) return 0.01f;
-        double angularRadians = 2.0 * Math.atan(body.radius / distanceKm);
-        return (float)(100.0 * angularRadians);
+        return (float)(100.0 * 2.0 * Math.atan(body.radius / distanceKm));
     }
 
     private static void pointToPosition(PoseStack poseStack, Vec3 from, Vec3 to,
@@ -420,20 +669,19 @@ public class SpaceObjectRenderer {
         Vec3 direction = to.subtract(from);
         if (direction.length() == 0) return;
         direction = direction.normalize();
-
         Vector3f modelForward = new Vector3f(1, 0.3f, 1);
         modelForward.normalize();
-        Vector3f targetDir = new Vector3f(
+        Vector3f    targetDir = new Vector3f(
                 (float) direction.x, (float) direction.y, (float) direction.z);
-
-        Quaternionf rotation = new Quaternionf().rotationTo(modelForward, targetDir);
+        Quaternionf rotation  = new Quaternionf().rotationTo(modelForward, targetDir);
         poseStack.mulPose(rotation);
         poseStack.mulPose(Axis.YP.rotation((float) offsetRadians));
     }
 
     private static Vec3 getRelativePosition(CelestialBody target, CelestialBody observer) {
-        Vec3 targetPos   = positionCache.getOrDefault(target, Vec3.ZERO);
-        Vec3 observerPos = observer != null ? positionCache.getOrDefault(observer, Vec3.ZERO) : Vec3.ZERO;
+        Vec3 targetPos   = positionCache.getOrDefault(target,   Vec3.ZERO);
+        Vec3 observerPos = observer != null
+                ? positionCache.getOrDefault(observer, Vec3.ZERO) : Vec3.ZERO;
         return targetPos.subtract(observerPos);
     }
 
@@ -448,11 +696,20 @@ public class SpaceObjectRenderer {
         }
     }
 
-    public static VertexBuffer getSphereBuffer()  { return sphereBuffer; }
-    public static void bindSphereBuffer()          { if (sphereBuffer != null) sphereBuffer.bind(); }
+    public static VertexBuffer getSphereBuffer() { return sphereBuffer; }
+    public static void bindSphereBuffer()        { if (sphereBuffer != null) sphereBuffer.bind(); }
+
+    public static void invalidatePositionCache() {
+        lastCacheUpdate = -999; 
+    }
 
     public static void cleanup() {
-        if (sphereBuffer != null) sphereBuffer.close();
+        if (sphereBuffer != null) { sphereBuffer.close(); sphereBuffer = null; }
+        ringBuffers.forEach((k, v) -> v.close());
+        ringBuffers.clear();
+        StarFieldRenderer.cleanup();
+        SupernovaManager.clear();
+        ObjMeshCache.clearAll();
         initialized = false;
     }
 }

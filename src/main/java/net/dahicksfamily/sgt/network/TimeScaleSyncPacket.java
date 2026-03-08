@@ -6,10 +6,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/**
- * SERVER → CLIENT: broadcast whenever /timescale is run.
- * Each client updates their own GlobalTime instance on receipt.
- */
+ 
 public class TimeScaleSyncPacket {
 
     private final double timeScale;
@@ -26,7 +23,7 @@ public class TimeScaleSyncPacket {
         return new TimeScaleSyncPacket(buf.readDouble());
     }
 
-    /** Runs on the CLIENT main thread. */
+     
     public static void handle(TimeScaleSyncPacket pkt, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> GlobalTime.getInstance().setTimeScale(pkt.timeScale));
         ctx.get().setPacketHandled(true);

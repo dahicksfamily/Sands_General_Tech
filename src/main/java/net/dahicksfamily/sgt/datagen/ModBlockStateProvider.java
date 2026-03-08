@@ -16,14 +16,14 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        // General
+ 
         objBlockWithItem(ModBlocks.SPHERE);
 
-        //  Ore
+ 
 
-        // Functional
+ 
 
-        // Non-Block Shapes
+ 
 
     }
 
@@ -34,18 +34,18 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private void objBlockWithItem(RegistryObject<Block> blockRegistryObject) {
         String name = blockRegistryObject.getId().getPath();
 
-        // Build the OBJ model
+ 
         BlockModelBuilder model = models().getBuilder(name)
-                .parent(models().getExistingFile(mcLoc("block/block"))) // parent must be ModelFile
+                .parent(models().getExistingFile(mcLoc("block/block"))) 
                 .customLoader(net.minecraftforge.client.model.generators.loaders.ObjModelBuilder::begin)
-                .modelLocation(modLoc("models/" + name + ".obj")) // path to OBJ
+                .modelLocation(modLoc("models/" + name + ".obj")) 
                 .flipV(true)
                 .automaticCulling(true)
                 .end()
-                .texture(name + "_texture", modLoc("block/" + name)) // maps "sphere_texture" in JSON
-                .texture("particle", modLoc("block/" + name));      // maps "particle" in JSON
+                .texture(name + "_texture", modLoc("block/" + name)) 
+                .texture("particle", modLoc("block/" + name)); 
 
-        // Assign the model to block variant
+ 
         getVariantBuilder(blockRegistryObject.get())
                 .partialState()
                 .modelForState()

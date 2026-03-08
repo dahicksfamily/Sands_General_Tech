@@ -19,6 +19,7 @@ public class CelestialBody extends Orbit {
     public double tidalLockingOffset;
 
     public Atmosphere atmosphere = null;
+    public CelestialRing ring = null;
 
     public double getSurfaceGravity() {
         return 0;

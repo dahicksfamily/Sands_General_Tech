@@ -51,7 +51,7 @@ This support has been dropped as of Minecraft release 1.7, as Risugami no longer
 It also contains suggestions and hints and generous helpings of code from LexManos, author of MinecraftForge.
 http://www.minecraftforge.net/
 
-Additionally, it contains an implementation of topological sort based on that 
+Additionally, it contains an implementation of topological sort based on that
 published at http://keithschwarz.com/interesting/code/?dir=topological-sort
 
 It also contains code from the Maven project for performing versioned dependency
@@ -62,4 +62,3 @@ with credit to it's authors.
 
 Forge Mod Loader downloads components from the Minecraft Coder Pack
 (http://mcp.ocean-labs.de/index.php/Main_Page) with kind permission from the MCP team.
-

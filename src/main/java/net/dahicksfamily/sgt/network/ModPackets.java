@@ -25,6 +25,20 @@ public class ModPackets {
                 .decoder(TimeScaleSyncPacket::decode)
                 .consumerMainThread(TimeScaleSyncPacket::handle)
                 .add();
+        CHANNEL.registerMessage(
+                nextId++,
+                OrbitPacket.class,
+                OrbitPacket::encode,
+                OrbitPacket::decode,
+                OrbitPacket::handle
+        );
+        CHANNEL.registerMessage(
+                nextId++,
+                WorldSeedPacket.class,
+                WorldSeedPacket::encode,
+                WorldSeedPacket::decode,
+                WorldSeedPacket::handle
+        );
     }
 
     public static <T> void sendToAllClients(T packet) {

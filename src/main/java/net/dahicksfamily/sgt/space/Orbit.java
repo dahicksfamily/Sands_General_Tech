@@ -3,19 +3,19 @@ package net.dahicksfamily.sgt.space;
 import net.minecraft.world.phys.Vec3;
 
 public class Orbit {
-    public double semiMajorAxis;        // a - size of orbit (AU or km)
-    protected double eccentricity;         // e - shape (0 = circle, <1 = ellipse)
-    protected double inclination;          // i - tilt relative to reference plane (radians)
-    protected double longitudeOfAscendingNode;  // Omega - where orbit crosses reference plane
-    protected double argumentOfPeriapsis;  // omega - where closest approach is
-    protected double meanAnomalyAtEpoch;   // M0 - position at reference time
-    protected double epoch;                // reference time (ticks or seconds)
+    public double semiMajorAxis; 
+    public double eccentricity; 
+    public double inclination; 
+    protected double longitudeOfAscendingNode; 
+    protected double argumentOfPeriapsis; 
+    protected double meanAnomalyAtEpoch; 
+    protected double epoch; 
 
-    public double period;               // orbital period (calculated from semi-major axis)
-    public CelestialBody parent;        // what this orbits around (null for barycenter)
+    public double period; 
+    public CelestialBody parent; 
 
-    // Gravitational parameter (GM) - can be set based on parent mass
-    protected static final double G = 6.67430e-11; // Gravitational constant m^2/(kg*s^2)
+ 
+    protected static final double G = 6.67430e-11; 
 
     public Vec3 getPositionAtTime(double time) {
         if (parent == null || semiMajorAxis == 0) {
@@ -88,7 +88,7 @@ public class Orbit {
     }
 
     protected double eccentricToTrueAnomaly(double E) {
-        // tan(ν/2) = sqrt((1+e)/(1-e)) * tan(E/2)
+ 
         double beta = eccentricity / (1 + Math.sqrt(1 - eccentricity * eccentricity));
         double trueAnomaly = E + 2 * Math.atan(beta * Math.sin(E) / (1 - beta * Math.cos(E)));
 
@@ -116,10 +116,10 @@ public class Orbit {
     public void calculatePeriod() {
         if (parent != null) {
             double mu = G * parent.mass;
-            // Convert semi-major axis to meters if in AU (1 AU = 1.496e11 m)
-            double a_meters = semiMajorAxis * 1.496e11; // Assuming AU
+ 
+            double a_meters = semiMajorAxis * 1.496e11; 
             period = 2 * Math.PI * Math.sqrt(Math.pow(a_meters, 3) / mu);
-            // Convert period from seconds to days
+ 
             period = period / 86400.0;
         }
     }

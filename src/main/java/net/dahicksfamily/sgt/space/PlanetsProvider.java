@@ -184,6 +184,13 @@ public class PlanetsProvider {
         saturn.meanAnomalyAtEpoch = 0;
         saturn.epoch = 0;
         saturn.period = 10759.22;
+        CelestialRing saturnRings = new CelestialRing();
+        saturnRings.innerRadius = 1.11f;
+        saturnRings.outerRadius = 2.44f;
+        saturnRings.opacity     = 1.0f;
+        saturnRings.texture     = new ResourceLocation("sgt",
+                "textures/misc/celestial/rings/saturn_rings.png");
+        saturn.ring = saturnRings;
         registerCelestialBody(saturn);
 
         CelestialBody uranus = new CelestialBody();
@@ -205,6 +212,13 @@ public class PlanetsProvider {
         uranus.meanAnomalyAtEpoch = 0;
         uranus.epoch = 0;
         uranus.period = 30688.5;
+        CelestialRing uranusRings = new CelestialRing();
+        uranusRings.innerRadius = 1.60f;
+        uranusRings.outerRadius = 2.05f;
+        uranusRings.opacity     = 0.65f;
+        uranusRings.texture     = new ResourceLocation("sgt",
+                "textures/misc/celestial/rings/uranus_rings.png");
+        uranus.ring = uranusRings;
         registerCelestialBody(uranus);
 
         CelestialBody neptune = new CelestialBody();
@@ -226,6 +240,13 @@ public class PlanetsProvider {
         neptune.meanAnomalyAtEpoch = 0;
         neptune.epoch = 0;
         neptune.period = 60182.0;
+        CelestialRing neptuneRings = new CelestialRing();
+        neptuneRings.innerRadius = 2.10f;
+        neptuneRings.outerRadius = 2.60f;
+        neptuneRings.opacity     = 0.45f;
+        neptuneRings.texture     = new ResourceLocation("sgt",
+                "textures/misc/celestial/rings/neptune_rings.png");
+        neptune.ring = neptuneRings;
         registerCelestialBody(neptune);
 
         CelestialBody pluto = new CelestialBody();
@@ -239,10 +260,6 @@ public class PlanetsProvider {
         pluto.tidallyLocked = true;
         pluto.longitudeAtEpoch = 0;
         pluto.eccentricity = 0.2488;
-        pluto.inclination = Math.toRadians(17.16);
-        pluto.longitudeOfAscendingNode = Math.toRadians(110.30);
-        pluto.argumentOfPeriapsis = Math.toRadians(113.76);
-        pluto.meanAnomalyAtEpoch = 0;
         pluto.epoch = 0;
         pluto.period = 90560;
         Atmosphere plutoAtmo = new Atmosphere();
@@ -472,20 +489,15 @@ public class PlanetsProvider {
         charon.name = "Charon";
         charon.mass = 1.586e21;
         charon.radius = 606.0;
-        charon.rotationPeriod = -153.2928; // tidally locked with Pluto
+        charon.rotationPeriod = -153.2928; 
         charon.axialTilt = 0;
         charon.albedo = 0.38f;
         charon.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/charon.png");
         charon.tidallyLocked = true;
         charon.tidalLockingOffset = 0;
-        charon.longitudeAtEpoch = 0;
         charon.eccentricity = 0.0;
-        charon.inclination = 0;
-        charon.longitudeOfAscendingNode = 0;
-        charon.argumentOfPeriapsis = 0;
-        charon.meanAnomalyAtEpoch = 0;
         charon.epoch = 0;
-        charon.period = 6.387; // orbital period around Pluto barycenter (days)
+        charon.period = 6.387; 
 
         registerCelestialBody(charon);
 
@@ -493,13 +505,605 @@ public class PlanetsProvider {
                 sol, 39.48, 90560.0, 0.249, Math.toRadians(17.1), 0.0);
 
         pluto.parent = plutoBary;
-        pluto.semiMajorAxis = 2035;       // km - Pluto offset from barycentre
+        pluto.semiMajorAxis = 2035;
+        pluto.eccentricity = 0.0;
+        pluto.inclination = Math.toRadians(119.6); 
+        pluto.longitudeOfAscendingNode = Math.toRadians(223.1);
+        pluto.argumentOfPeriapsis = 0;
+        pluto.meanAnomalyAtEpoch = 0;
 
         charon.parent = plutoBary;
-        charon.semiMajorAxis = 17536;     // km - Charon offset (opposite side)
-        charon.longitudeAtEpoch = Math.PI; // starts 180° from Pluto
+        charon.semiMajorAxis = 17536;
+        charon.eccentricity = 0.0;
+        charon.inclination = Math.toRadians(119.6); 
+        charon.longitudeOfAscendingNode = Math.toRadians(223.1);
+        charon.argumentOfPeriapsis = 0;
+        charon.meanAnomalyAtEpoch = 0;
+        charon.longitudeAtEpoch = Math.PI; 
 
-        assignDimension(charon, ModDimensions.SPACE_LEVEL_KEY);
+ 
+ 
+ 
+ 
+
+        CelestialBody amalthea = new CelestialBody();
+        amalthea.name = "Amalthea";
+        amalthea.mass = 2.08e18;
+        amalthea.radius = 83.5;
+        amalthea.rotationPeriod = 11.957; 
+        amalthea.axialTilt = 0;
+        amalthea.albedo = 0.09f;
+        amalthea.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/amalthea.png");
+        amalthea.tidallyLocked = true;
+        amalthea.tidalLockingOffset = 0;
+        amalthea.longitudeAtEpoch = 0;
+        amalthea.parent = jupiter;
+        amalthea.semiMajorAxis = 181366;
+        amalthea.eccentricity = 0.0032;
+        amalthea.inclination = Math.toRadians(0.374);
+        amalthea.longitudeOfAscendingNode = 0;
+        amalthea.argumentOfPeriapsis = 0;
+        amalthea.meanAnomalyAtEpoch = 0;
+        amalthea.epoch = 0;
+        amalthea.period = 0.4982;
+        registerCelestialBody(amalthea);
+
+        CelestialBody thebe = new CelestialBody();
+        thebe.name = "Thebe";
+        thebe.mass = 4.3e17;
+        thebe.radius = 49.3;
+        thebe.rotationPeriod = 16.177;
+        thebe.axialTilt = 0;
+        thebe.albedo = 0.047f;
+        thebe.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/thebe.png");
+        thebe.tidallyLocked = true;
+        thebe.tidalLockingOffset = 0;
+        thebe.longitudeAtEpoch = 0;
+        thebe.parent = jupiter;
+        thebe.semiMajorAxis = 221895;
+        thebe.eccentricity = 0.0177;
+        thebe.inclination = Math.toRadians(1.076);
+        thebe.longitudeOfAscendingNode = 0;
+        thebe.argumentOfPeriapsis = 0;
+        thebe.meanAnomalyAtEpoch = 0;
+        thebe.epoch = 0;
+        thebe.period = 0.6745;
+        registerCelestialBody(thebe);
+
+        CelestialBody himalia = new CelestialBody();
+        himalia.name = "Himalia";
+        himalia.mass = 4.2e18;
+        himalia.radius = 85.0;
+        himalia.rotationPeriod = 7.782;
+        himalia.axialTilt = 0;
+        himalia.albedo = 0.057f;
+        himalia.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/himalia.png");
+        himalia.tidallyLocked = false;
+        himalia.tidalLockingOffset = 0;
+        himalia.longitudeAtEpoch = 0;
+        himalia.parent = jupiter;
+        himalia.semiMajorAxis = 11460000;
+        himalia.eccentricity = 0.1620;
+        himalia.inclination = Math.toRadians(27.5);
+        himalia.longitudeOfAscendingNode = 0;
+        himalia.argumentOfPeriapsis = 0;
+        himalia.meanAnomalyAtEpoch = 0;
+        himalia.epoch = 0;
+        himalia.period = 250.56;
+        registerCelestialBody(himalia);
+
+ 
+ 
+ 
+ 
+
+        CelestialBody mimas = new CelestialBody();
+        mimas.name = "Mimas";
+        mimas.mass = 3.75e19;
+        mimas.radius = 198.2;
+        mimas.rotationPeriod = 22.617; 
+        mimas.axialTilt = 0;
+        mimas.albedo = 0.962f;
+        mimas.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/mimas.png");
+        mimas.tidallyLocked = true;
+        mimas.tidalLockingOffset = 0;
+        mimas.longitudeAtEpoch = 0;
+        mimas.parent = saturn;
+        mimas.semiMajorAxis = 185520;
+        mimas.eccentricity = 0.0196;
+        mimas.inclination = Math.toRadians(1.574);
+        mimas.longitudeOfAscendingNode = 0;
+        mimas.argumentOfPeriapsis = 0;
+        mimas.meanAnomalyAtEpoch = 0;
+        mimas.epoch = 0;
+        mimas.period = 0.9424;
+        registerCelestialBody(mimas);
+
+        CelestialBody enceladus = new CelestialBody();
+        enceladus.name = "Enceladus";
+        enceladus.mass = 1.08e20;
+        enceladus.radius = 252.1;
+        enceladus.rotationPeriod = 32.888;
+        enceladus.axialTilt = 0;
+        enceladus.albedo = 0.99f; 
+        enceladus.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/enceladus.png");
+        enceladus.tidallyLocked = true;
+        enceladus.tidalLockingOffset = 0;
+        enceladus.longitudeAtEpoch = 0;
+        enceladus.parent = saturn;
+        enceladus.semiMajorAxis = 238020;
+        enceladus.eccentricity = 0.0047;
+        enceladus.inclination = Math.toRadians(0.009);
+        enceladus.longitudeOfAscendingNode = 0;
+        enceladus.argumentOfPeriapsis = 0;
+        enceladus.meanAnomalyAtEpoch = 0;
+        enceladus.epoch = 0;
+        enceladus.period = 1.370;
+        Atmosphere enceladusAtmo = new Atmosphere();
+        enceladusAtmo.surfaceDensity      = 0.000001f;
+        enceladusAtmo.scaleHeight         = 0.10f;
+        enceladusAtmo.outerHeightFraction = 0.06f;
+        enceladusAtmo.rayleighCoeff       = new Vec3(0.8, 0.9, 1.0);
+        enceladusAtmo.mieDensity          = 0.01f;
+        enceladusAtmo.airglowColor        = new Vec3(0.6, 0.8, 1.0);
+        enceladusAtmo.airglowIntensity    = 0.005f;
+        enceladusAtmo.terminatorBandColor     = new Vec3(0.7, 0.85, 1.0);
+        enceladusAtmo.terminatorBandIntensity = 0.1f;
+        enceladus.atmosphere = enceladusAtmo;
+        registerCelestialBody(enceladus);
+
+        CelestialBody tethys = new CelestialBody();
+        tethys.name = "Tethys";
+        tethys.mass = 6.18e20;
+        tethys.radius = 531.1;
+        tethys.rotationPeriod = 45.307;
+        tethys.axialTilt = 0;
+        tethys.albedo = 0.80f;
+        tethys.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/tethys.png");
+        tethys.tidallyLocked = true;
+        tethys.tidalLockingOffset = 0;
+        tethys.longitudeAtEpoch = 0;
+        tethys.parent = saturn;
+        tethys.semiMajorAxis = 294619;
+        tethys.eccentricity = 0.0001;
+        tethys.inclination = Math.toRadians(1.091);
+        tethys.longitudeOfAscendingNode = 0;
+        tethys.argumentOfPeriapsis = 0;
+        tethys.meanAnomalyAtEpoch = 0;
+        tethys.epoch = 0;
+        tethys.period = 1.888;
+        registerCelestialBody(tethys);
+
+        CelestialBody dione = new CelestialBody();
+        dione.name = "Dione";
+        dione.mass = 1.095e21;
+        dione.radius = 561.4;
+        dione.rotationPeriod = 65.686;
+        dione.axialTilt = 0;
+        dione.albedo = 0.998f;
+        dione.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/dione.png");
+        dione.tidallyLocked = true;
+        dione.tidalLockingOffset = 0;
+        dione.longitudeAtEpoch = 0;
+        dione.parent = saturn;
+        dione.semiMajorAxis = 377396;
+        dione.eccentricity = 0.0022;
+        dione.inclination = Math.toRadians(0.028);
+        dione.longitudeOfAscendingNode = 0;
+        dione.argumentOfPeriapsis = 0;
+        dione.meanAnomalyAtEpoch = 0;
+        dione.epoch = 0;
+        dione.period = 2.737;
+        registerCelestialBody(dione);
+
+        CelestialBody rhea = new CelestialBody();
+        rhea.name = "Rhea";
+        rhea.mass = 2.307e21;
+        rhea.radius = 763.8;
+        rhea.rotationPeriod = 108.417;
+        rhea.axialTilt = 0;
+        rhea.albedo = 0.949f;
+        rhea.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/rhea.png");
+        rhea.tidallyLocked = true;
+        rhea.tidalLockingOffset = 0;
+        rhea.longitudeAtEpoch = 0;
+        rhea.parent = saturn;
+        rhea.semiMajorAxis = 527108;
+        rhea.eccentricity = 0.0013;
+        rhea.inclination = Math.toRadians(0.345);
+        rhea.longitudeOfAscendingNode = 0;
+        rhea.argumentOfPeriapsis = 0;
+        rhea.meanAnomalyAtEpoch = 0;
+        rhea.epoch = 0;
+        rhea.period = 4.518;
+        registerCelestialBody(rhea);
+
+        CelestialBody hyperion = new CelestialBody();
+        hyperion.name = "Hyperion";
+        hyperion.mass = 5.62e18;
+        hyperion.radius = 135.0;
+        hyperion.rotationPeriod = 13.0; 
+        hyperion.axialTilt = 0;
+        hyperion.albedo = 0.30f;
+        hyperion.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/hyperion.png");
+        hyperion.tidallyLocked = false; 
+        hyperion.tidalLockingOffset = 0;
+        hyperion.longitudeAtEpoch = 0;
+        hyperion.parent = saturn;
+        hyperion.semiMajorAxis = 1481010;
+        hyperion.eccentricity = 0.1230;
+        hyperion.inclination = Math.toRadians(0.43);
+        hyperion.longitudeOfAscendingNode = 0;
+        hyperion.argumentOfPeriapsis = 0;
+        hyperion.meanAnomalyAtEpoch = 0;
+        hyperion.epoch = 0;
+        hyperion.period = 21.277;
+        registerCelestialBody(hyperion);
+
+        CelestialBody iapetus = new CelestialBody();
+        iapetus.name = "Iapetus";
+        iapetus.mass = 1.806e21;
+        iapetus.radius = 734.5;
+        iapetus.rotationPeriod = 1903.728;
+        iapetus.axialTilt = 0;
+        iapetus.albedo = 0.22f; 
+        iapetus.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/iapetus.png");
+        iapetus.tidallyLocked = true;
+        iapetus.tidalLockingOffset = 0;
+        iapetus.longitudeAtEpoch = 0;
+        iapetus.parent = saturn;
+        iapetus.semiMajorAxis = 3560820;
+        iapetus.eccentricity = 0.0283;
+        iapetus.inclination = Math.toRadians(15.47); 
+        iapetus.longitudeOfAscendingNode = 0;
+        iapetus.argumentOfPeriapsis = 0;
+        iapetus.meanAnomalyAtEpoch = 0;
+        iapetus.epoch = 0;
+        iapetus.period = 79.322;
+        registerCelestialBody(iapetus);
+
+ 
+ 
+ 
+ 
+ 
+
+        CelestialBody miranda = new CelestialBody();
+        miranda.name = "Miranda";
+        miranda.mass = 6.59e19;
+        miranda.radius = 235.8;
+        miranda.rotationPeriod = 33.923;
+        miranda.axialTilt = 0;
+        miranda.albedo = 0.32f;
+        miranda.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/miranda.png");
+        miranda.tidallyLocked = true;
+        miranda.tidalLockingOffset = 0;
+        miranda.longitudeAtEpoch = 0;
+        miranda.parent = uranus;
+        miranda.semiMajorAxis = 129390;
+        miranda.eccentricity = 0.0013;
+        miranda.inclination = Math.toRadians(4.22);
+        miranda.longitudeOfAscendingNode = 0;
+        miranda.argumentOfPeriapsis = 0;
+        miranda.meanAnomalyAtEpoch = 0;
+        miranda.epoch = 0;
+        miranda.period = 1.4135;
+        registerCelestialBody(miranda);
+
+        CelestialBody ariel = new CelestialBody();
+        ariel.name = "Ariel";
+        ariel.mass = 1.353e21;
+        ariel.radius = 578.9;
+        ariel.rotationPeriod = 60.489;
+        ariel.axialTilt = 0;
+        ariel.albedo = 0.53f;
+        ariel.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/ariel.png");
+        ariel.tidallyLocked = true;
+        ariel.tidalLockingOffset = 0;
+        ariel.longitudeAtEpoch = 0;
+        ariel.parent = uranus;
+        ariel.semiMajorAxis = 191020;
+        ariel.eccentricity = 0.0012;
+        ariel.inclination = Math.toRadians(0.31);
+        ariel.longitudeOfAscendingNode = 0;
+        ariel.argumentOfPeriapsis = 0;
+        ariel.meanAnomalyAtEpoch = 0;
+        ariel.epoch = 0;
+        ariel.period = 2.520;
+        registerCelestialBody(ariel);
+
+        CelestialBody umbriel = new CelestialBody();
+        umbriel.name = "Umbriel";
+        umbriel.mass = 1.172e21;
+        umbriel.radius = 584.7;
+        umbriel.rotationPeriod = 99.46;
+        umbriel.axialTilt = 0;
+        umbriel.albedo = 0.26f;
+        umbriel.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/umbriel.png");
+        umbriel.tidallyLocked = true;
+        umbriel.tidalLockingOffset = 0;
+        umbriel.longitudeAtEpoch = 0;
+        umbriel.parent = uranus;
+        umbriel.semiMajorAxis = 266300;
+        umbriel.eccentricity = 0.0039;
+        umbriel.inclination = Math.toRadians(0.36);
+        umbriel.longitudeOfAscendingNode = 0;
+        umbriel.argumentOfPeriapsis = 0;
+        umbriel.meanAnomalyAtEpoch = 0;
+        umbriel.epoch = 0;
+        umbriel.period = 4.144;
+        registerCelestialBody(umbriel);
+
+        CelestialBody titania = new CelestialBody();
+        titania.name = "Titania";
+        titania.mass = 3.527e21;
+        titania.radius = 788.9;
+        titania.rotationPeriod = 208.94;
+        titania.axialTilt = 0;
+        titania.albedo = 0.35f;
+        titania.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/titania.png");
+        titania.tidallyLocked = true;
+        titania.tidalLockingOffset = 0;
+        titania.longitudeAtEpoch = 0;
+        titania.parent = uranus;
+        titania.semiMajorAxis = 435910;
+        titania.eccentricity = 0.0011;
+        titania.inclination = Math.toRadians(0.10);
+        titania.longitudeOfAscendingNode = 0;
+        titania.argumentOfPeriapsis = 0;
+        titania.meanAnomalyAtEpoch = 0;
+        titania.epoch = 0;
+        titania.period = 8.706;
+        registerCelestialBody(titania);
+
+        CelestialBody oberon = new CelestialBody();
+        oberon.name = "Oberon";
+        oberon.mass = 3.014e21;
+        oberon.radius = 761.4;
+        oberon.rotationPeriod = 323.118;
+        oberon.axialTilt = 0;
+        oberon.albedo = 0.31f;
+        oberon.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/oberon.png");
+        oberon.tidallyLocked = true;
+        oberon.tidalLockingOffset = 0;
+        oberon.longitudeAtEpoch = 0;
+        oberon.parent = uranus;
+        oberon.semiMajorAxis = 583520;
+        oberon.eccentricity = 0.0014;
+        oberon.inclination = Math.toRadians(0.10);
+        oberon.longitudeOfAscendingNode = 0;
+        oberon.argumentOfPeriapsis = 0;
+        oberon.meanAnomalyAtEpoch = 0;
+        oberon.epoch = 0;
+        oberon.period = 13.463;
+        registerCelestialBody(oberon);
+
+ 
+ 
+ 
+ 
+
+        CelestialBody proteus = new CelestialBody();
+        proteus.name = "Proteus";
+        proteus.mass = 4.4e19;
+        proteus.radius = 210.0;
+        proteus.rotationPeriod = 26.928;
+        proteus.axialTilt = 0;
+        proteus.albedo = 0.096f;
+        proteus.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/proteus.png");
+        proteus.tidallyLocked = true;
+        proteus.tidalLockingOffset = 0;
+        proteus.longitudeAtEpoch = 0;
+        proteus.parent = neptune;
+        proteus.semiMajorAxis = 117647;
+        proteus.eccentricity = 0.0005;
+        proteus.inclination = Math.toRadians(0.075);
+        proteus.longitudeOfAscendingNode = 0;
+        proteus.argumentOfPeriapsis = 0;
+        proteus.meanAnomalyAtEpoch = 0;
+        proteus.epoch = 0;
+        proteus.period = 1.1223;
+        registerCelestialBody(proteus);
+
+        CelestialBody nereid = new CelestialBody();
+        nereid.name = "Nereid";
+        nereid.mass = 3.1e19;
+        nereid.radius = 170.0;
+        nereid.rotationPeriod = 11.594;
+        nereid.axialTilt = 0;
+        nereid.albedo = 0.155f;
+        nereid.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/nereid.png");
+        nereid.tidallyLocked = false; 
+        nereid.tidalLockingOffset = 0;
+        nereid.longitudeAtEpoch = 0;
+        nereid.parent = neptune;
+        nereid.semiMajorAxis = 5513400;
+        nereid.eccentricity = 0.7512; 
+        nereid.inclination = Math.toRadians(7.23);
+        nereid.longitudeOfAscendingNode = 0;
+        nereid.argumentOfPeriapsis = 0;
+        nereid.meanAnomalyAtEpoch = 0;
+        nereid.epoch = 0;
+        nereid.period = 360.14;
+        registerCelestialBody(nereid);
+
+ 
+ 
+ 
+ 
+ 
+
+        CelestialBody ceres = new CelestialBody();
+        ceres.name = "Ceres";
+        ceres.mass = 9.39e20;
+        ceres.radius = 476.2;
+        ceres.rotationPeriod = 9.074;
+        ceres.axialTilt = Math.toRadians(4.0);
+        ceres.albedo = 0.09f;
+        ceres.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/ceres.png");
+        ceres.tidallyLocked = false;
+        ceres.longitudeAtEpoch = 0;
+        ceres.parent = sol;
+        ceres.semiMajorAxis = 2.767;
+        ceres.eccentricity = 0.0796;
+        ceres.inclination = Math.toRadians(10.593);
+        ceres.longitudeOfAscendingNode = Math.toRadians(80.33);
+        ceres.argumentOfPeriapsis = Math.toRadians(73.60);
+        ceres.meanAnomalyAtEpoch = 0;
+        ceres.epoch = 0;
+        ceres.period = 1680.5;
+        registerCelestialBody(ceres);
+
+        CelestialBody eris = new CelestialBody();
+        eris.name = "Eris";
+        eris.mass = 1.66e22;
+        eris.radius = 1163.0;
+        eris.rotationPeriod = 25.9;
+        eris.axialTilt = Math.toRadians(78.0);
+        eris.albedo = 0.96f; 
+        eris.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/eris.png");
+        eris.tidallyLocked = false;
+        eris.longitudeAtEpoch = 0;
+        eris.parent = sol;
+        eris.semiMajorAxis = 67.66;
+        eris.eccentricity = 0.4340;
+        eris.inclination = Math.toRadians(44.04);
+        eris.longitudeOfAscendingNode = Math.toRadians(35.96);
+        eris.argumentOfPeriapsis = Math.toRadians(151.63);
+        eris.meanAnomalyAtEpoch = 0;
+        eris.epoch = 0;
+        eris.period = 203830.0;
+        registerCelestialBody(eris);
+
+        CelestialBody makemake = new CelestialBody();
+        makemake.name = "Makemake";
+        makemake.mass = 3.1e21;
+        makemake.radius = 715.0;
+        makemake.rotationPeriod = 22.83;
+        makemake.axialTilt = 0;
+        makemake.albedo = 0.81f;
+        makemake.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/makemake.png");
+        makemake.tidallyLocked = false;
+        makemake.longitudeAtEpoch = 0;
+        makemake.parent = sol;
+        makemake.semiMajorAxis = 45.79;
+        makemake.eccentricity = 0.1591;
+        makemake.inclination = Math.toRadians(28.96);
+        makemake.longitudeOfAscendingNode = Math.toRadians(79.36);
+        makemake.argumentOfPeriapsis = Math.toRadians(294.84);
+        makemake.meanAnomalyAtEpoch = 0;
+        makemake.epoch = 0;
+        makemake.period = 112897.0;
+        registerCelestialBody(makemake);
+
+        CelestialBody haumea = new CelestialBody();
+        haumea.name = "Haumea";
+        haumea.mass = 4.006e21;
+        haumea.radius = 780.0; 
+        haumea.rotationPeriod = 3.915; 
+        haumea.axialTilt = Math.toRadians(28.19);
+        haumea.albedo = 0.66f;
+        haumea.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/haumea.png");
+        haumea.tidallyLocked = false;
+        haumea.longitudeAtEpoch = 0;
+        haumea.parent = sol;
+        haumea.semiMajorAxis = 43.13;
+        haumea.eccentricity = 0.1913;
+        haumea.inclination = Math.toRadians(28.19);
+        haumea.longitudeOfAscendingNode = Math.toRadians(122.17);
+        haumea.argumentOfPeriapsis = Math.toRadians(239.04);
+        haumea.meanAnomalyAtEpoch = 0;
+        haumea.epoch = 0;
+        haumea.period = 103774.0;
+        registerCelestialBody(haumea);
+
+        CelestialBody sedna = new CelestialBody();
+        sedna.name = "Sedna";
+        sedna.mass = 8.3e20;
+        sedna.radius = 498.0;
+        sedna.rotationPeriod = 10.273;
+        sedna.axialTilt = 0;
+        sedna.albedo = 0.32f;
+        sedna.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/sedna.png");
+        sedna.tidallyLocked = false;
+        sedna.longitudeAtEpoch = 0;
+        sedna.parent = sol;
+        sedna.semiMajorAxis = 506.0; 
+        sedna.eccentricity = 0.8432; 
+        sedna.inclination = Math.toRadians(11.93);
+        sedna.longitudeOfAscendingNode = Math.toRadians(144.26);
+        sedna.argumentOfPeriapsis = Math.toRadians(311.09);
+        sedna.meanAnomalyAtEpoch = 0;
+        sedna.epoch = 0;
+        sedna.period = 4015000.0; 
+        registerCelestialBody(sedna);
+
+        CelestialBody quaoar = new CelestialBody();
+        quaoar.name = "Quaoar";
+        quaoar.mass = 1.4e21;
+        quaoar.radius = 555.0;
+        quaoar.rotationPeriod = 17.6788;
+        quaoar.axialTilt = 0;
+        quaoar.albedo = 0.109f;
+        quaoar.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/quaoar.png");
+        quaoar.tidallyLocked = false;
+        quaoar.longitudeAtEpoch = 0;
+        quaoar.parent = sol;
+        quaoar.semiMajorAxis = 43.41;
+        quaoar.eccentricity = 0.0393;
+        quaoar.inclination = Math.toRadians(7.99);
+        quaoar.longitudeOfAscendingNode = Math.toRadians(188.94);
+        quaoar.argumentOfPeriapsis = Math.toRadians(147.49);
+        quaoar.meanAnomalyAtEpoch = 0;
+        quaoar.epoch = 0;
+        quaoar.period = 104956.0;
+        registerCelestialBody(quaoar);
+
+        CelestialBody orcus = new CelestialBody();
+        orcus.name = "Orcus";
+        orcus.mass = 6.4e20;
+        orcus.radius = 458.0;
+        orcus.rotationPeriod = 13.188;
+        orcus.axialTilt = 0;
+        orcus.albedo = 0.231f;
+        orcus.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/orcus.png");
+        orcus.tidallyLocked = false;
+        orcus.longitudeAtEpoch = 0;
+        orcus.parent = sol;
+        orcus.semiMajorAxis = 39.17;
+        orcus.eccentricity = 0.2271;
+        orcus.inclination = Math.toRadians(20.57);
+        orcus.longitudeOfAscendingNode = Math.toRadians(268.65);
+        orcus.argumentOfPeriapsis = Math.toRadians(72.31);
+        orcus.meanAnomalyAtEpoch = 0;
+        orcus.epoch = 0;
+        orcus.period = 89592.0;
+        registerCelestialBody(orcus);
+
+        CelestialBody SpaceOrbiter = new CelestialBody();
+        SpaceOrbiter.name = "Space Orbiter";
+        SpaceOrbiter.mass = 1;
+        SpaceOrbiter.radius = 0.5f; 
+        SpaceOrbiter.rotationPeriod = 24;
+        SpaceOrbiter.axialTilt = 0;
+        SpaceOrbiter.albedo = 0f;
+        SpaceOrbiter.texture = new ResourceLocation("sgt", "textures/misc/celestial/bodys/earth.png");
+        SpaceOrbiter.tidallyLocked = false;
+        SpaceOrbiter.tidalLockingOffset = 0;
+        SpaceOrbiter.longitudeAtEpoch = 0;
+        SpaceOrbiter.longitudeOfAscendingNode = 0; 
+        SpaceOrbiter.argumentOfPeriapsis = 0; 
+        SpaceOrbiter.meanAnomalyAtEpoch = 0;
+        SpaceOrbiter.epoch = 0;
+        SpaceOrbiter.period = 11.0; 
+ 
+ 
+        SpaceOrbiter.parent = earth;
+        SpaceOrbiter.semiMajorAxis = 100000;
+        SpaceOrbiter.eccentricity = 0;
+        SpaceOrbiter.inclination = 0;
+        registerCelestialBody(SpaceOrbiter);
+        assignDimension(SpaceOrbiter, ModDimensions.SPACE_LEVEL_KEY);
     }
 
 

@@ -3,10 +3,10 @@ package net.dahicksfamily.sgt.space.atmosphere;
 import net.minecraft.world.phys.Vec3;
 
 public class Atmosphere {
-    public float surfaceDensity = 1.0f; // 1 = Earth Standard
+    public float surfaceDensity = 1.0f; 
     public float scaleHeight = 0.085f;
     public float outerHeightFraction = 0.15f;
-    public Vec3 rayleighCoeff = new Vec3(0.58, 0.82, 1.0); // N₂ + O₂ mix (Earth-like)
+    public Vec3 rayleighCoeff = new Vec3(0.58, 0.82, 1.0); 
     public Vec3 mieCoeff = new Vec3(0.9, 0.9, 0.9);
     public float mieDensity = 0.05f;
     public float mieAnisotropy = 0.76f;
@@ -20,32 +20,33 @@ public class Atmosphere {
         Atmosphere a = new Atmosphere();
         a.surfaceDensity      = 1.0f;
         a.scaleHeight         = 0.085f;
-        a.outerHeightFraction = 0.04f;   // 4% of planet radius ≈ ~255 km visual shell
+        a.outerHeightFraction = 0.06f;
         a.rayleighCoeff       = new Vec3(0.48, 0.72, 1.0);
         a.mieCoeff            = new Vec3(0.88, 0.88, 0.88);
         a.mieDensity          = 0.06f;
         a.mieAnisotropy       = 0.76f;
         a.airglowColor        = new Vec3(0.08, 0.95, 0.28);
         a.airglowIntensity    = 0.016f;
-        a.shadowSoftness      = 0.14f;
-        a.terminatorBandColor     = new Vec3(1.0, 0.45, 0.05);  // warm orange
-        a.terminatorBandIntensity = 1.0f;
+        a.shadowSoftness      = 0.04f; 
+        a.terminatorBandColor     = new Vec3(1.0, 0.45, 0.05);
+        a.terminatorBandIntensity = 0.4f; 
         return a;
     }
 
     public static Atmosphere venusLike() {
         Atmosphere a = new Atmosphere();
-        a.surfaceDensity      = 90.0f;
-        a.scaleHeight         = 0.07f;
-        a.outerHeightFraction = 0.06f;   // Venus still thick but visually contained
-        a.rayleighCoeff       = new Vec3(1.0, 0.82, 0.65);
-        a.mieCoeff            = new Vec3(1.0, 0.92, 0.75);
-        a.mieDensity          = 0.90f;
-        a.mieAnisotropy       = 0.85f;
-        a.airglowColor        = new Vec3(0.7, 0.25, 0.9);
-        a.airglowIntensity    = 0.08f;
-        a.shadowSoftness      = 0.25f;
-        a.terminatorBandIntensity = 0.0f;  // no band — uniform cloud scatter
+        a.surfaceDensity      = 60.0f; 
+        a.scaleHeight         = 0.25f; 
+        a.outerHeightFraction = 0.18f; 
+        a.rayleighCoeff       = new Vec3(1.0, 0.92, 0.70); 
+        a.mieCoeff            = new Vec3(1.0, 0.97, 0.88); 
+        a.mieDensity          = 2.5f; 
+        a.mieAnisotropy       = 0.82f;
+        a.airglowColor        = new Vec3(1.0, 0.85, 0.4);
+        a.airglowIntensity    = 0.0f; 
+        a.shadowSoftness      = 0.35f; 
+        a.terminatorBandColor     = new Vec3(1.0, 0.6, 0.2);
+        a.terminatorBandIntensity = 0.0f; 
         return a;
     }
 
@@ -61,7 +62,7 @@ public class Atmosphere {
         a.airglowColor        = new Vec3(0.05, 0.45, 1.0);
         a.airglowIntensity    = 0.006f;
         a.shadowSoftness      = 0.12f;
-        a.terminatorBandColor     = new Vec3(1.0, 0.35, 0.08);  // dusty red-orange
+        a.terminatorBandColor     = new Vec3(1.0, 0.35, 0.08); 
         a.terminatorBandIntensity = 0.4f;
         return a;
     }
@@ -70,7 +71,7 @@ public class Atmosphere {
         Atmosphere a = new Atmosphere();
         a.surfaceDensity      = 1.5f;
         a.scaleHeight         = 0.12f;
-        a.outerHeightFraction = 0.09f;  // Titan's haze is genuinely thick, but not 28%
+        a.outerHeightFraction = 0.09f; 
         a.rayleighCoeff       = new Vec3(0.62, 0.74, 1.0);
         a.mieCoeff            = new Vec3(1.0, 0.58, 0.28);
         a.mieDensity          = 0.92f;
@@ -78,7 +79,7 @@ public class Atmosphere {
         a.airglowColor        = new Vec3(0.9, 0.55, 0.1);
         a.airglowIntensity    = 0.03f;
         a.shadowSoftness      = 0.20f;
-        a.terminatorBandColor     = new Vec3(0.9, 0.5, 0.1);   // orange tholin haze
+        a.terminatorBandColor     = new Vec3(0.9, 0.5, 0.1); 
         a.terminatorBandIntensity = 0.6f;
         return a;
     }
@@ -95,7 +96,7 @@ public class Atmosphere {
         a.airglowColor        = new Vec3(0.3, 0.6, 1.0);
         a.airglowIntensity    = 0.01f;
         a.shadowSoftness      = 0.20f;
-        a.terminatorBandIntensity = 0.0f;  // gas giant — no distinct band
+        a.terminatorBandIntensity = 0.0f; 
         return a;
     }
 }

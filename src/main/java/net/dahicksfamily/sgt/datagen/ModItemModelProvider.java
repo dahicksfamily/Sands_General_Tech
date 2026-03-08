@@ -19,23 +19,23 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        // Normal
+ 
 
-        // Food
+ 
 
-        // Functional
+ 
 
-        // Armor
+ 
 
-        // Disc
+ 
 
-        // Spawn Egg
+ 
 
-        // Block Items
+ 
 
-        // Functional
+ 
 
-        // Normal
+ 
         evenSimplerBlockItem(ModBlocks.SPHERE);
     }
 

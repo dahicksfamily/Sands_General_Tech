@@ -38,7 +38,7 @@ license, if you do not agree with it you can change your mapping names to other 
 build.gradle. For the latest license text, refer to the mapping file itself, or the reference copy here:
 https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
 
-Additional Resources: 
+Additional Resources:
 =========================
 Community Documentation: https://docs.minecraftforge.net/en/1.20.1/gettingstarted/
 LexManos' Install Video: https://youtu.be/8VEdtQLuLO0

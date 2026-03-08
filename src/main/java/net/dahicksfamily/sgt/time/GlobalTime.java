@@ -156,8 +156,8 @@ public class GlobalTime {
         double skyRot = (timeInHours % currentObserver.rotationPeriod)
                 / currentObserver.rotationPeriod * 2.0 * Math.PI;
 
-        double elevation = sx * Math.cos(skyRot) + sy * Math.sin(skyRot);  // +1=noon, -1=midnight
-        double east      = sx * -Math.sin(skyRot) + sy * Math.cos(skyRot); // +1=rising, -1=setting
+        double elevation = sx * Math.cos(skyRot) + sy * Math.sin(skyRot); 
+        double east      = sx * -Math.sin(skyRot) + sy * Math.cos(skyRot); 
 
         double angle = Math.atan2(elevation, -east) / (2.0 * Math.PI);
         if (angle < 0) angle += 1.0;

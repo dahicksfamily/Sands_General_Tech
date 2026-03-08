@@ -16,12 +16,12 @@ public class TelescopeItem extends Item {
 
     @Override
     public int getUseDuration(ItemStack stack) {
-        return 72000; // Can use indefinitely
+        return 72000; 
     }
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.SPYGLASS; // Use spyglass animation
+        return UseAnim.SPYGLASS; 
     }
 
     @Override

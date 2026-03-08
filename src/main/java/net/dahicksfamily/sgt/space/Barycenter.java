@@ -6,7 +6,7 @@ public class Barycenter extends CelestialBody {
         this.name   = name;
         this.mass   = 0;
         this.radius = 0;
-        this.rotationPeriod = 1.0;  // arbitrary, never used
+        this.rotationPeriod = 1.0; 
         this.axialTilt      = 0;
         this.albedo         = 0;
         this.atmosphere     = null;
