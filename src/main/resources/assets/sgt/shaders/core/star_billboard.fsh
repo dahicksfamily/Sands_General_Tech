@@ -59,8 +59,13 @@ void main() {
     }
 
 
+    // compute color + alpha
     vec3 col = vertexColor.rgb * brightness * intensity;
-    if (max(col.r, max(col.g, col.b)) < 0.0008) discard;
+    float alpha = clamp(brightness * intensity, 0.0, 1.0);
 
-    fragColor = vec4(col, 0.0);
+    // drop tiny fragments so the background truly becomes transparent there
+    if (alpha < 0.0008) discard;
+
+    // output straight (non-premultiplied) RGBA
+    fragColor = vec4(col, alpha);
 }

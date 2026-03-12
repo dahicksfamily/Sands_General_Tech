@@ -1,6 +1,7 @@
 package net.dahicksfamily.sgt.client;
 
 import net.dahicksfamily.sgt.SGT;
+import net.dahicksfamily.sgt.background.BackgroundObject;
 import net.dahicksfamily.sgt.space.atmosphere.Atmosphere;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +26,8 @@ public class ModShaders {
     private static ShaderInstance quasarShader;
     private static ShaderInstance nebulaShader;
     private static ShaderInstance galaxyShader;
+    private static ShaderInstance supernovaShader;
+    private static ShaderInstance planetSkyboxShader;
 
     public static final float SHADOW_VISUAL_SCALE = 15.0f;
     public static final int   MAX_SHADOW_CASTERS  = 8;
@@ -32,21 +35,14 @@ public class ModShaders {
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
         event.registerShader(
-                new ShaderInstance(event.getResourceProvider(),
-                        new ResourceLocation(SGT.MOD_ID, "celestial_body"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL),
-                shader -> celestialBodyShader = shader);
+                new ShaderInstance(event.getResourceProvider(), new ResourceLocation(SGT.MOD_ID, "celestial_body"),
+                DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL), shader -> celestialBodyShader = shader);
         event.registerShader(
-                new ShaderInstance(event.getResourceProvider(),
-                        new ResourceLocation(SGT.MOD_ID, "atmosphere"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL),
-                shader -> atmosphereShader = shader);
-
+                new ShaderInstance(event.getResourceProvider(), new ResourceLocation(SGT.MOD_ID, "atmosphere"),
+                DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL), shader -> atmosphereShader = shader);
         event.registerShader(
-                new ShaderInstance(event.getResourceProvider(),
-                        new ResourceLocation(SGT.MOD_ID, "ring"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL),
-                shader -> ringShader = shader);
+                new ShaderInstance(event.getResourceProvider(), new ResourceLocation(SGT.MOD_ID, "ring"),
+                DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL), shader -> ringShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(),
                 new ResourceLocation(SGT.MOD_ID, "star_billboard"),
                 DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL), s -> starBillboardShader = s);
@@ -62,7 +58,12 @@ public class ModShaders {
         event.registerShader(new ShaderInstance(event.getResourceProvider(),
                 new ResourceLocation(SGT.MOD_ID, "galaxy"),
                 DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL), s -> galaxyShader = s);
-
+        event.registerShader(new ShaderInstance(event.getResourceProvider(),
+                new ResourceLocation(SGT.MOD_ID, "supernova"),
+                DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL), s -> supernovaShader = s);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(),
+                new ResourceLocation(SGT.MOD_ID, "planet_skybox"),
+                DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL), s -> planetSkyboxShader = s);
     }
 
     public static ShaderInstance getCelestialBodyShader() { return celestialBodyShader; }
@@ -73,8 +74,8 @@ public class ModShaders {
     public static ShaderInstance getQuasarShader()        { return quasarShader; }
     public static ShaderInstance getNebulaShader()        { return nebulaShader; }
     public static ShaderInstance getGalaxyShader()        { return galaxyShader; }
-
- 
+    public static ShaderInstance getSupernovaShader() { return supernovaShader; }
+    public static ShaderInstance getPlanetSkyboxShader() { return planetSkyboxShader; }
 
     private static final String[] CASTER_DIRS = {
             "ShadowCasterDir0","ShadowCasterDir1","ShadowCasterDir2","ShadowCasterDir3",
@@ -85,7 +86,7 @@ public class ModShaders {
             "ShadowCasterRadius4","ShadowCasterRadius5","ShadowCasterRadius6","ShadowCasterRadius7"
     };
 
-     
+
     public static void setCelestialBodyLighting(
             Matrix3f skyRot,
             Vector3f lightDirOrb,
@@ -96,30 +97,30 @@ public class ModShaders {
 
         if (celestialBodyShader == null) return;
 
- 
+
         Vector3f lightView = skyRot.transform(new Vector3f(lightDirOrb));
         setCB3f("LightDirection", lightView.x, lightView.y, lightView.z);
         setCB1f("AmbientLight",   ambientLight);
         setCB1f("StarRadius",     starAngRad * SHADOW_VISUAL_SCALE);
 
- 
- 
+
+
         for (int i = 0; i < MAX_SHADOW_CASTERS; i++) {
             if (i < shadowCasters.size()) {
                 ShadowCaster sc = shadowCasters.get(i);
- 
- 
- 
+
+
+
                 Vector3f dv = skyRot.transform(new Vector3f(sc.direction()));
                 setCB3f(CASTER_DIRS[i], dv.x, dv.y, dv.z);
-                setCB1f(CASTER_RADS[i], sc.angularRadius()); 
+                setCB1f(CASTER_RADS[i], sc.angularRadius());
             } else {
                 setCB3f(CASTER_DIRS[i], 0f, 0f, -1f);
-                setCB1f(CASTER_RADS[i], 0f); 
+                setCB1f(CASTER_RADS[i], 0f);
             }
         }
 
- 
+
         String[] RDIRS = {"ReflectedLightDir0","ReflectedLightDir1",
                 "ReflectedLightDir2","ReflectedLightDir3"};
         String[] RCOLS = {"ReflectedLightColor0","ReflectedLightColor1",
@@ -137,7 +138,7 @@ public class ModShaders {
         }
     }
 
- 
+
 
     public static void setAtmosphereUniforms(Vector3f lightDirView, Atmosphere atmo,
                                              float planetRadFrac, float ambientLight) {
@@ -164,12 +165,10 @@ public class ModShaders {
                 (float)atmo.terminatorBandColor.z);
     }
 
- 
-
     public record ShadowCaster(Vector3f direction, float angularRadius) {}
     public record ReflectedLight(Vector3f direction, Vector3f color)    {}
 
- 
+
 
     public static void setRingUniforms(Vector3f lightDirView, Vector3f lightDirModel, float opacity) {
         if (ringShader == null) return;
@@ -228,11 +227,77 @@ public class ModShaders {
         var ua = nebulaShader.getUniform("LayerAlpha"); if (ua != null) ua.set(alpha);
         var ur = nebulaShader.getUniform("LayerRot");   if (ur != null) ur.set(rot);
     }
-    public static void setGalaxyUniforms(float r, float g, float b, float bright, float aspect) {
+    public static void setGalaxyUniforms(BackgroundObject o) {
         if (galaxyShader == null) return;
-        var uc = galaxyShader.getUniform("GalaxyColor");  if (uc != null) uc.set(r,g,b);
-        var ub = galaxyShader.getUniform("Brightness");   if (ub != null) ub.set(bright);
-        var ua = galaxyShader.getUniform("Aspect");       if (ua != null) ua.set(aspect);
+        setG3f("GalaxyColor",  o.r, o.g, o.b);
+        setG1f("Brightness",   o.brightness);
+        setG1f("Aspect",       o.galaxyAspect);
+        setG1f("SpiralArms",   o.galaxySpiralArms);
+        setG1f("ArmTightness", o.galaxyArmTightness);
+        setG1f("ArmOffset",    o.galaxyArmOffset);
+        setG1f("HasBar",       o.galaxyHasBar ? 1.0f : 0.0f);
+        setG1f("BarLength",    o.galaxyBarLength);
+        setG1f("BarWidth",     o.galaxyBarWidth);
+        setG1f("BulgeSize",    o.galaxyBulgeSize);
+        setG1f("BulgeColor",   o.galaxyBulgeColor);
+        setG1f("HaloSize",     o.galaxyHaloSize);
+        setG1f("HaloOpacity",  o.galaxyHaloOpacity);
+        setG1f("AGNStrength",  o.galaxyAGNStrength);
+        setG1f("DustLane",     o.galaxyDustLane);
+        setG1f("DiscOpacity",  o.galaxyDiscOpacity);
+    }
+    private static void setG1f(String n, float v) {
+        var u = galaxyShader.getUniform(n); if (u != null) u.set(v);
+    }
+    private static void setG3f(String n, float x, float y, float z) {
+        var u = galaxyShader.getUniform(n); if (u != null) u.set(x, y, z);
+    }
+
+    public static void setSupernovaUniforms(float time, float progress, float phase) {
+        if (supernovaShader == null) return;
+        var u = supernovaShader.getUniform("Time");     if (u != null) u.set(time);
+        u = supernovaShader.getUniform("Progress"); if (u != null) u.set(progress);
+        u = supernovaShader.getUniform("Phase");    if (u != null) u.set(phase);
+    }
+
+    public static void setPlanetSkyboxUniforms(
+            Vector3f sunDir, Vector3f sunColor, float sunAngularRadius,
+            Vector3f rayleighCoeff, Vector3f mieCoeff,
+            float mieDensity, float mieAnisotropy,
+            float surfaceDensity, float scaleHeight,
+            Vector3f airglowColor, float airglowIntensity,
+            Vector3f terminatorColor, float terminatorIntensity,
+            float exposure,
+            Vector3f vanillaSkyTint,
+            float vanillaTintStrength
+    ) {
+        if (planetSkyboxShader == null) return;
+
+        sky3f("SunDir",              sunDir.x,         sunDir.y,         sunDir.z);
+        sky3f("SunColor",            sunColor.x,       sunColor.y,       sunColor.z);
+        sky1f("SunAngularRadius",    sunAngularRadius);
+        sky3f("RayleighCoeff",       rayleighCoeff.x,  rayleighCoeff.y,  rayleighCoeff.z);
+        sky3f("MieCoeff",            mieCoeff.x,       mieCoeff.y,       mieCoeff.z);
+        sky1f("MieDensity",          mieDensity);
+        sky1f("MieAnisotropy",       mieAnisotropy);
+        sky1f("SurfaceDensity",      surfaceDensity);
+        sky1f("ScaleHeight",         scaleHeight);
+        sky3f("AirglowColor",        airglowColor.x,   airglowColor.y,   airglowColor.z);
+        sky1f("AirglowIntensity",    airglowIntensity);
+        sky3f("TerminatorColor",     terminatorColor.x,terminatorColor.y,terminatorColor.z);
+        sky1f("TerminatorIntensity", terminatorIntensity);
+        sky1f("Exposure",            exposure);
+        sky3f("VanillaSkyTint",      vanillaSkyTint.x, vanillaSkyTint.y, vanillaSkyTint.z);
+        sky1f("VanillaTintStrength", vanillaTintStrength);
+    }
+
+    private static void sky1f(String name, float v) {
+        var u = planetSkyboxShader.getUniform(name);
+        if (u != null) u.set(v);
+    }
+    private static void sky3f(String name, float x, float y, float z) {
+        var u = planetSkyboxShader.getUniform(name);
+        if (u != null) u.set(x, y, z);
     }
 
     public static void setLightDirection(Vector3f d) { setCB3f("LightDirection", d.x, d.y, d.z); }

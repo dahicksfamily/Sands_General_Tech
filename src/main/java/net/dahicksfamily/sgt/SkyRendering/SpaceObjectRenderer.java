@@ -94,9 +94,6 @@ public class SpaceObjectRenderer {
         poseStack.pushPose();
 
         if (observer != null) {
-
-
-
             double latitude  = Math.toRadians(90.0); 
             double axialTilt = observer.axialTilt;
 
@@ -115,8 +112,6 @@ public class SpaceObjectRenderer {
 
             org.joml.Matrix3f skyRot = new org.joml.Matrix3f(poseStack.last().pose());
             StarFieldRenderer.render(poseStack, projectionMatrix, partialTick);
-
-
         }
 
         org.joml.Matrix3f skyRot = new org.joml.Matrix3f(poseStack.last().pose());
@@ -696,6 +691,29 @@ public class SpaceObjectRenderer {
         }
     }
 
+    public static Vec3 getSunDirectionForObserver(CelestialBody observer) {
+        if (observer == null) return Vec3.ZERO;
+
+        SolarSystem sol       = SolarSystem.getInstance();
+        Star        lightSrc  = sol.getPrimaryLightSource(observer);
+        if (lightSrc == null) return new Vec3(0, 1, 0);
+
+        Vec3 obsPos  = positionCache.getOrDefault(observer,  Vec3.ZERO);
+        Vec3 starPos = positionCache.getOrDefault(lightSrc,  Vec3.ZERO);
+        Vec3 delta   = starPos.subtract(obsPos);
+        return delta.length() > 0 ? delta.normalize() : new Vec3(0, 1, 0);
+    }
+
+    public static Vec3 getObserverAbsPos(CelestialBody observer) {
+        if (observer == null) return Vec3.ZERO;
+        return positionCache.getOrDefault(observer, Vec3.ZERO);
+    }
+
+    public static Vec3 getStarAbsPos(Star star) {
+        if (star == null) return null;
+        return positionCache.getOrDefault(star, null);
+    }
+
     public static VertexBuffer getSphereBuffer() { return sphereBuffer; }
     public static void bindSphereBuffer()        { if (sphereBuffer != null) sphereBuffer.bind(); }
 
@@ -708,8 +726,9 @@ public class SpaceObjectRenderer {
         ringBuffers.forEach((k, v) -> v.close());
         ringBuffers.clear();
         StarFieldRenderer.cleanup();
-        SupernovaManager.clear();
-        ObjMeshCache.clearAll();
+        SupernovaManager.cleanup();
+        ObjMeshCache.cleanup();
+        SkyboxRenderer.cleanup();
         initialized = false;
     }
 }

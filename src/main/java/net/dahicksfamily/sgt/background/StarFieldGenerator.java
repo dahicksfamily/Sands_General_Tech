@@ -19,7 +19,7 @@ public class StarFieldGenerator {
         addSpecialStars (rng, data);
         addExoticObjects(rng, data);
         addNebulae      (rng, data, 48);
-        addGalaxies     (rng, data, 28);
+        addGalaxies     (rng, data, 68);
 
         return data;
     }
@@ -161,7 +161,7 @@ public class StarFieldGenerator {
             int pt = rng.nextInt(4);
             float[][] pal = paletteTypes[pt];
             o.r = pal[0][0]; o.g = pal[0][1]; o.b = pal[0][2];
-            o.size         = 0.05f + rng.nextFloat()*0.2f; 
+            o.size         = 0.1f + rng.nextFloat()*0.25f;
             o.brightness   = 0.25f + rng.nextFloat()*0.55f;
             o.nebulaLayers = 5 + rng.nextInt(6);
             o.nebulaSpread = 0.40f + rng.nextFloat()*0.55f;
@@ -189,17 +189,81 @@ public class StarFieldGenerator {
             BackgroundObject o = new BackgroundObject();
             o.type = BackgroundObject.Type.GALAXY;
             placeSky(o, rng, 0.08f);
-            boolean spiral = rng.nextBoolean();
-            if (spiral) { o.r = 0.88f; o.g = 0.90f; o.b = 1.00f; }
-            else         { o.r = 1.00f; o.g = 0.88f; o.b = 0.68f; }
-            o.size          = 1f + rng.nextFloat()*3f; 
-            o.brightness    = 0.20f + rng.nextFloat()*0.55f;
-            o.galaxyAspect  = 0.15f + rng.nextFloat()*0.70f;
-            o.galaxyRotAngle = rng.nextFloat()*(float)Math.PI*2f;
- 
- 
- 
-            o.variableAmplitude = spiral ? 1.0f : 0.0f; 
+
+            float morphRoll = rng.nextFloat();
+
+            if (morphRoll < 0.20f) {
+                o.r = 1.00f; o.g = 0.88f; o.b = 0.68f;
+                o.galaxySpiralArms   = 0;
+                o.galaxyHasBar       = false;
+                o.galaxyAspect       = 0.4f + rng.nextFloat()*0.6f;
+                o.galaxyBulgeSize    = 0.55f + rng.nextFloat()*0.35f;
+                o.galaxyBulgeColor   = 0.9f + rng.nextFloat()*0.1f;
+                o.galaxyHaloSize     = 0.90f + rng.nextFloat()*0.1f;
+                o.galaxyHaloOpacity  = 0.18f + rng.nextFloat()*0.12f;
+                o.galaxyDiscOpacity  = 0.0f;
+                o.galaxyDustLane     = 0.0f;
+                o.galaxyHasAGN       = rng.nextFloat() < 0.15f;
+                o.galaxyAGNStrength  = o.galaxyHasAGN ? 0.4f + rng.nextFloat()*0.6f : 0f;
+
+            } else if (morphRoll < 0.30f) {
+                o.r = 0.95f; o.g = 0.90f; o.b = 0.78f;
+                o.galaxySpiralArms   = 0;
+                o.galaxyHasBar       = false;
+                o.galaxyAspect       = 0.15f + rng.nextFloat()*0.5f;
+                o.galaxyBulgeSize    = 0.35f + rng.nextFloat()*0.20f;
+                o.galaxyBulgeColor   = 0.7f + rng.nextFloat()*0.3f;
+                o.galaxyHaloSize     = 0.80f + rng.nextFloat()*0.1f;
+                o.galaxyHaloOpacity  = 0.10f + rng.nextFloat()*0.08f;
+                o.galaxyDiscOpacity  = 0.5f + rng.nextFloat()*0.4f;
+                o.galaxyDustLane     = o.galaxyAspect < 0.3f
+                        ? 0.3f + rng.nextFloat()*0.4f : 0f;
+                o.galaxyHasAGN       = rng.nextFloat() < 0.1f;
+                o.galaxyAGNStrength  = o.galaxyHasAGN ? 0.3f + rng.nextFloat()*0.4f : 0f;
+
+            } else if (morphRoll < 0.70f) {
+
+                o.r = 0.80f; o.g = 0.88f; o.b = 1.00f;
+                o.galaxySpiralArms   = 2 + rng.nextInt(6);
+                o.galaxyHasBar       = false;
+                o.galaxyArmTightness = 0.4f + rng.nextFloat()*1.2f;
+                o.galaxyArmOffset    = rng.nextFloat() * (float)(Math.PI*2);
+                o.galaxyAspect       = 0.15f + rng.nextFloat()*0.80f;
+                o.galaxyBulgeSize    = 0.10f + rng.nextFloat()*0.25f;
+                o.galaxyBulgeColor   = 0.3f + rng.nextFloat()*0.5f;
+                o.galaxyHaloSize     = 0.75f + rng.nextFloat()*0.15f;
+                o.galaxyHaloOpacity  = 0.07f + rng.nextFloat()*0.08f;
+                o.galaxyDiscOpacity  = 0.6f + rng.nextFloat()*0.4f;
+                o.galaxyDustLane     = o.galaxyAspect < 0.3f
+                        ? 0.5f + rng.nextFloat()*0.5f : 0f;
+                o.galaxyHasAGN       = rng.nextFloat() < 0.25f;
+                o.galaxyAGNStrength  = o.galaxyHasAGN ? 0.5f + rng.nextFloat()*0.5f : 0f;
+
+            } else {
+
+                o.r = 0.78f; o.g = 0.87f; o.b = 1.00f;
+                o.galaxySpiralArms   = 2 + rng.nextInt(5);
+                o.galaxyHasBar       = true;
+                o.galaxyBarLength    = 0.15f + rng.nextFloat()*0.20f;
+                o.galaxyBarWidth     = 0.03f + rng.nextFloat()*0.05f;
+                o.galaxyArmTightness = 0.5f + rng.nextFloat()*1.0f;
+                o.galaxyArmOffset    = rng.nextFloat() * (float)(Math.PI*2);
+                o.galaxyAspect       = 0.15f + rng.nextFloat()*0.80f;
+                o.galaxyBulgeSize    = 0.12f + rng.nextFloat()*0.20f;
+                o.galaxyBulgeColor   = 0.4f + rng.nextFloat()*0.4f;
+                o.galaxyHaloSize     = 0.75f + rng.nextFloat()*0.15f;
+                o.galaxyHaloOpacity  = 0.07f + rng.nextFloat()*0.09f;
+                o.galaxyDiscOpacity  = 0.65f + rng.nextFloat()*0.35f;
+                o.galaxyDustLane     = o.galaxyAspect < 0.3f
+                        ? 0.6f + rng.nextFloat()*0.4f : 0f;
+                o.galaxyHasAGN       = rng.nextFloat() < 0.35f;
+                o.galaxyAGNStrength  = o.galaxyHasAGN ? 0.6f + rng.nextFloat()*0.4f : 0f;
+            }
+
+            o.size           = 1f + rng.nextFloat()*3f;
+            o.brightness     = 0.20f + rng.nextFloat()*0.55f;
+            o.galaxyRotAngle = rng.nextFloat() * (float)(Math.PI*2);
+            o.variableAmplitude = o.galaxySpiralArms / 4.0f;
             o.seed = rng.nextLong();
             data.galaxies.add(o);
         }

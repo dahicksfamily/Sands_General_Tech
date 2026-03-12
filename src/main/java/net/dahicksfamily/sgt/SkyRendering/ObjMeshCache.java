@@ -40,7 +40,7 @@ public class ObjMeshCache {
         return loaded;
     }
 
-    public static void clearAll() {
+    public static void cleanup() {
         cache.forEach((k, v) -> { if (v != MISSING) v.close(); });
         cache.clear();
     }

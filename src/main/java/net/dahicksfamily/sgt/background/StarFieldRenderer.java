@@ -22,7 +22,6 @@ public class StarFieldRenderer {
     private static final float EXOTIC_SCALE = 0.22f;
 
     private static StarFieldData data;
-
  
     private static VertexBuffer simpleStarVBO;
  
@@ -35,8 +34,6 @@ public class StarFieldRenderer {
     private static final List<VertexBuffer> galaxyVBOs   = new ArrayList<>();
 
     private static boolean initialized = false;
-
- 
 
     public static void initialize(long seed) {
         cleanup();
@@ -114,18 +111,9 @@ public class StarFieldRenderer {
         RenderSystem.setShaderColor(1,1,1,1);
     }
 
- 
- 
- 
- 
-
     private static void renderSimple(PoseStack poseStack, Matrix4f proj, float time) {
         ShaderInstance sh = ModShaders.getStarBillboardShader();
         if (sh == null || simpleStarVBO == null) return;
-
- 
- 
- 
         RenderSystem.blendFunc(
                 GlStateManager.SourceFactor.ONE,
                 GlStateManager.DestFactor.ONE);
@@ -220,7 +208,7 @@ public class StarFieldRenderer {
 
         for (int i = 0; i < data.galaxies.size(); i++) {
             BackgroundObject o = data.galaxies.get(i);
-            ModShaders.setGalaxyUniforms(o.r, o.g, o.b, o.brightness, o.galaxyAspect);
+            ModShaders.setGalaxyUniforms(o);
             RenderSystem.setShader(() -> sh);
             galaxyVBOs.get(i).bind();
             galaxyVBOs.get(i).drawWithShader(poseStack.last().pose(), proj, sh);
@@ -228,38 +216,41 @@ public class StarFieldRenderer {
         }
     }
 
- 
+
 
     private static void renderSupernovae(PoseStack poseStack, Matrix4f proj,
                                          long gameTick, float time) {
-        ShaderInstance sh = ModShaders.getStarBillboardShader();
+        ShaderInstance sh = ModShaders.getSupernovaShader();
         if (sh == null) return;
-        RenderSystem.blendFunc(
+
+        RenderSystem.blendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
                 GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ONE);
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
         for (SupernovaEvent sn : SupernovaManager.getActive()) {
             float progress = sn.progress(gameTick);
             float bright   = sn.brightness(gameTick);
-            float cr = 1.0f;
-            float cg = Math.max(0.0f, 1.0f - progress * 1.5f);
-            float cb = Math.max(0.0f, 1.0f - progress * 3.0f);
 
             BackgroundObject tmp = new BackgroundObject();
             tmp.x = sn.x; tmp.y = sn.y; tmp.z = sn.z;
-            tmp.size              = sn.peakSize * (0.5f + progress * 1.5f);
+            tmp.r = 1.0f; tmp.g = 1.0f; tmp.b = 1.0f;
+            tmp.size              = (float) (sn.peakSize * (0.9 + progress * 2.8));
             tmp.brightness        = bright;
-            tmp.variableAmplitude = 0.08f;
-            tmp.variablePhase     = 0f;
+            tmp.variableAmplitude = progress;
+            tmp.variablePhase     = sn.seed;
+            tmp.variablePeriod    = 0f;
+
+            ModShaders.setSupernovaUniforms(time, progress, sn.seed);
+            RenderSystem.setShader(() -> sh);
+            RenderSystem.setShaderColor(1f, 1f, 1f, bright);
 
             VertexBuffer quad = buildSingleQuad(tmp, 1.0f, 0f);
-            ModShaders.setStarBillboardTime(time);
-            RenderSystem.setShader(() -> sh);
-            RenderSystem.setShaderColor(cr, cg, cb, bright);
             quad.bind();
             quad.drawWithShader(poseStack.last().pose(), proj, sh);
             VertexBuffer.unbind();
-            quad.close(); 
+            quad.close();
         }
     }
 

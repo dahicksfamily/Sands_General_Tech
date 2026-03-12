@@ -5,8 +5,8 @@ public class SupernovaEvent {
     public float r, g, b; 
     public long  startTick; 
     public long  durationTicks; 
-    public float peakSize; 
-
+    public float peakSize;
+    public float seed = 0.0f;
      
     public float progress(long currentTick) {
         return Math.min(1f, (float)(currentTick - startTick) / durationTicks);

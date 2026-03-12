@@ -35,6 +35,21 @@ public class BackgroundObject {
     public float[] nebulaLayerSize, nebulaLayerRot;
 
  
-    public float galaxyAspect   = 0.35f; 
-    public float galaxyRotAngle = 0f; 
+    public float   galaxyAspect   = 0.35f;
+    public float   galaxyRotAngle = 0f;
+    public boolean galaxyHasBar       = false;
+    public float   galaxyBarLength    = 0.25f;
+    public float   galaxyBarWidth     = 0.06f;
+    public int     galaxySpiralArms   = 2;
+    public float   galaxyArmTightness = 0.8f;
+    public float   galaxyArmOffset    = 0.0f;
+    public float   galaxyBulgeSize    = 0.22f;
+    public float   galaxyBulgeColor   = 0.0f;
+    public float   galaxyHaloSize     = 0.85f;
+    public float   galaxyHaloOpacity  = 0.12f;
+    public boolean galaxyHasAGN       = false;
+    public float   galaxyAGNStrength  = 0.0f;
+    public float   galaxyDustLane     = 0.0f;
+    public float   galaxyDiscOpacity  = 1.0f;
+
 }

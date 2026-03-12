@@ -7,7 +7,10 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(LevelTimeAccess.class)
 public interface LevelTimeAccessMixin {
-     
+    /**
+     * @author Sand
+     * @reason Does Time/Day
+     */
     @Overwrite
     default float getTimeOfDay(float partialTick) {
         return GlobalTime.getInstance().getSunAngle();
